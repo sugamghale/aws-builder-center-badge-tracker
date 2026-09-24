@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="A private, browser-only progress tracker for AWS Builder Center badges."
+    />
+    <title>AWS Builder Center Badge Tracker</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
+      referrerpolicy="no-referrer"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjETkyahNf4nfo5HgkZ-Nb4FAyla5TAIE6kxHYRoOWIS_-qF7zJdVItQCYtIkHuxtufjyIMqYWImLfNgKmlIsYDe0Zskn6YrkMq4r3655z5XQtZW9iAefN77LyiKXQgdIb_KfR4Jt9fVbCI5eP4QDWtnfTxYIbT7BkKyHTbC6mriAaM3UbcROMxNFSdXvtz/s875/photo.png"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <div id="onboarding" class="onboarding-shell">
+      <main class="onboarding-card" aria-labelledby="onboarding-title">
+        <div class="brand-lockup">
+          <span class="brand-mark" aria-hidden="true"
+            ><i class="fa-brands fa-aws"></i></span
+          ><span>AWS Builder Center</span>
+        </div>
+        <p class="eyebrow">Personal progress companion</p>
+        <h1 id="onboarding-title">Welcome to Builder Badge Tracker</h1>
+        <p>
+          Track your AWS Builder Center badge progress, streaks, and activities
+          in one private place.
+        </p>
+        <form id="onboarding-form" class="form-grid">
+          <label
+            >Full name<input
+              id="setup-name"
+              name="fullName"
+              required
+              autocomplete="name"
+              placeholder="Sugam Ghale"
+          /></label>
+          <label
+            >AWS Builder ID<input
+              id="setup-id"
+              name="builderId"
+              required
+              placeholder="your-builder-id"
+          /></label>
+          <label
+            >Starting date<input
+              id="setup-date"
+              name="startDate"
+              type="date"
+              required
+          /></label>
+          <section
+            class="badge-selection-section"
+            aria-labelledby="setup-badges-title"
+          >
+            <div>
+              <p class="eyebrow">Existing progress</p>
+              <h2 id="setup-badges-title">
+                Which AWS Builder Center badges have you already completed?
+              </h2>
+              <p class="subtle">
+                Select only badges you earned before using this tracker. You can
+                change these selections later in Profile &amp; Settings.
+              </p>
+            </div>
+            <div
+              id="setup-badge-picker"
+              class="badge-picker-list"
+              aria-live="polite"
+            ></div>
+            <div
+              id="setup-earned-message"
+              class="notice setup-earned-message"
+              hidden
+            >
+              <strong>Already have some badges?</strong>
+              <p>
+                Your earlier Builder Center activity may have started before
+                this tracker, so its visit, like, and comment history may be
+                unknown. Already-earned badges stay completed, but new streak
+                tracking starts from today unless you manually add previous
+                activity dates.
+              </p>
+            </div>
+          </section>
+          <button class="button button-primary full" type="submit">
+            Start Tracking
+            <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+          </button>
+        </form>
+        <p class="privacy-note">
+          Stored only in this browser. No AWS connection, account credentials,
+          or data uploads.
+        </p>
+      </main>
+    </div>
+
+    <div id="app" class="app-shell" hidden>
+      <aside class="sidebar" aria-label="Primary navigation">
+        <div class="brand-lockup">
+          <span class="brand-mark" aria-hidden="true"
+            ><i class="fa-brands fa-aws"></i></span
+          ><span>AWS Builder Center<br /><strong>Badge Tracker</strong></span>
+        </div>
+        <nav id="side-nav" class="nav-list" aria-label="Sections">
+          <button class="nav-link active" data-view="dashboard">
+            <i class="nav-icon fa-solid fa-chart-pie" aria-hidden="true"></i>
+            Dashboard
+          </button>
+          <button class="nav-link" data-view="daily">
+            <i class="nav-icon fa-solid fa-list-check" aria-hidden="true"></i>
+            Daily tracker
+          </button>
+          <button class="nav-link" data-view="calendar">
+            <i
+              class="nav-icon fa-regular fa-calendar-days"
+              aria-hidden="true"
+            ></i>
+            Calendar
+          </button>
+          <button class="nav-link" data-view="badges">
+            <i class="nav-icon fa-solid fa-medal" aria-hidden="true"></i> Badges
+          </button>
+          <button class="nav-link" data-view="weekly">
+            <i
+              class="nav-icon fa-solid fa-calendar-week"
+              aria-hidden="true"
+            ></i>
+            Weekly goals
+          </button>
+          <button class="nav-link" data-view="profile">
+            <i class="nav-icon fa-solid fa-user-gear" aria-hidden="true"></i>
+            Profile & settings
+          </button>
+        </nav>
+        <div class="sidebar-footer">
+          Learn <i class="fa-solid fa-arrow-right" aria-hidden="true"></i> Build
+          <i class="fa-solid fa-arrow-right" aria-hidden="true"></i> Share
+          <i class="fa-solid fa-arrow-right" aria-hidden="true"></i> Repeat
+        </div>
+        <a
+          class="creator-credit"
+          href="https://builder.aws.com/community/@sugamghale"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Created by Sugam Ghale — open AWS Builder Center profile"
+        >
+          <img
+            class="creator-avatar"
+            src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjETkyahNf4nfo5HgkZ-Nb4FAyla5TAIE6kxHYRoOWIS_-qF7zJdVItQCYtIkHuxtufjyIMqYWImLfNgKmlIsYDe0Zskn6YrkMq4r3655z5XQtZW9iAefN77LyiKXQgdIb_KfR4Jt9fVbCI5eP4QDWtnfTxYIbT7BkKyHTbC6mriAaM3UbcROMxNFSdXvtz/s875/photo.png"
+            alt="Sugam Ghale"
+            draggable="false"
+            referrerpolicy="no-referrer"
+          />
+          <span><small>Created by</small><strong>Sugam Ghale</strong></span>
+        </a>
+      </aside>
+      <div class="mobile-header">
+        <div class="brand-lockup">
+          <span class="brand-mark" aria-hidden="true"
+            ><i class="fa-brands fa-aws"></i></span
+          ><span class="mobile-brand-copy"
+            ><strong>Badge Tracker</strong
+            ><small>Created by Sugam Ghale</small></span
+          >
+        </div>
+        <button
+          id="mobile-menu"
+          class="icon-button"
+          aria-label="Open navigation"
+          aria-expanded="false"
+        >
+          <i class="fa-solid fa-bars" aria-hidden="true"></i>
+        </button>
+      </div>
+      <main id="main-content" class="main-content" tabindex="-1">
+        <header class="page-header">
+          <div>
+            <p class="eyebrow">AWS Builder Center Badge Tracker</p>
+            <h1 id="view-title">Your builder journey</h1>
+          </div>
+          <button id="header-settings" class="button button-secondary">
+            <i class="fa-solid fa-gear" aria-hidden="true"></i> Settings
+          </button>
+        </header>
+        <div
+          id="view-dashboard"
+          class="view active"
+          data-view-panel="dashboard"
+        ></div>
+        <div id="view-daily" class="view" data-view-panel="daily"></div>
+        <div id="view-calendar" class="view" data-view-panel="calendar"></div>
+        <div id="view-badges" class="view" data-view-panel="badges"></div>
+        <div id="view-weekly" class="view" data-view-panel="weekly"></div>
+        <div id="view-profile" class="view" data-view-panel="profile"></div>
+      </main>
+      <nav id="bottom-nav" class="bottom-nav" aria-label="Mobile navigation">
+        <button class="nav-link active" data-view="dashboard">
+          <i class="fa-solid fa-chart-pie" aria-hidden="true"></i
+          ><span>Dashboard</span></button
+        ><button class="nav-link" data-view="daily">
+          <i class="fa-solid fa-list-check" aria-hidden="true"></i
+          ><span>Daily</span></button
+        ><button class="nav-link" data-view="calendar">
+          <i class="fa-regular fa-calendar-days" aria-hidden="true"></i
+          ><span>Calendar</span></button
+        ><button class="nav-link" data-view="badges">
+          <i class="fa-solid fa-medal" aria-hidden="true"></i
+          ><span>Badges</span></button
+        ><button class="nav-link" data-view="profile">
+          <i class="fa-solid fa-gear" aria-hidden="true"></i
+          ><span>Settings</span>
+        </button>
+      </nav>
+    </div>
+
+    <dialog id="badge-dialog" class="modal">
+      <div id="badge-dialog-content"></div>
+    </dialog>
+    <dialog id="weekly-article-dialog" class="modal compact-modal">
+      <form method="dialog" id="weekly-article-form">
+        <div class="modal-heading">
+          <div>
+            <p class="eyebrow">Weekly publishing</p>
+            <h2>
+              <i class="fa-solid fa-pen-to-square" aria-hidden="true"></i>
+              Record published article
+            </h2>
+          </div>
+          <button
+            class="icon-button"
+            value="cancel"
+            aria-label="Close article form"
+          >
+            <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+          </button>
+        </div>
+        <p class="subtle">
+          This records one article for the 4-Week Article Publishing Streak
+          only. It does not affect your First Article badge or article-like
+          records.
+        </p>
+        <div class="form-grid">
+          <label
+            >Article title<input
+              name="title"
+              required
+              placeholder="Title of your published article" /></label
+          ><label
+            >Published date<input name="date" type="date" required
+          /></label>
+        </div>
+        <div class="modal-actions">
+          <button class="button button-secondary" value="cancel">Cancel</button
+          ><button class="button button-primary" value="default">
+            <i class="fa-solid fa-floppy-disk" aria-hidden="true"></i> Save
+            article
+          </button>
+        </div>
+      </form>
+    </dialog>
+    <dialog id="settings-dialog" class="modal">
+      <form method="dialog" id="settings-form">
+        <div class="modal-heading">
+          <div>
+            <p class="eyebrow">Private browser data</p>
+            <h2>Profile & settings</h2>
+          </div>
+          <button
+            class="icon-button"
+            value="cancel"
+            aria-label="Close settings"
+          >
+            <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+          </button>
+        </div>
+        <div class="form-grid">
+          <label>Full name<input name="fullName" required /></label
+          ><label>Builder ID<input name="builderId" required /></label
+          ><label
+            >Starting date<input name="startDate" type="date" required
+          /></label>
+        </div>
+        <section
+          class="badge-selection-section settings-badge-section"
+          aria-labelledby="settings-badges-title"
+        >
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Badge status</p>
+              <h3 id="settings-badges-title">Completed Badges</h3>
+            </div>
+            <strong id="settings-earned-count" class="pill earned"
+              >0 selected</strong
+            >
+          </div>
+          <p class="subtle">
+            Badge selections save immediately. Mark badges earned before you
+            started tracking; this status is separate from the dates recorded
+            for your current activity and streaks.
+          </p>
+          <div id="settings-badge-picker" class="badge-picker-list"></div>
+        </section>
+        <div class="settings-actions">
+          <button
+            type="button"
+            id="export-data"
+            class="button button-secondary"
+          >
+            <i class="fa-solid fa-download" aria-hidden="true"></i> Download
+            backup</button
+          ><label class="button button-secondary import-label"
+            ><i class="fa-solid fa-upload" aria-hidden="true"></i> Import
+            backup<input
+              id="import-data"
+              type="file"
+              accept="application/json,.json"
+              hidden
+          /></label>
+        </div>
+        <div class="modal-actions">
+          <button class="button button-secondary" value="cancel">Cancel</button
+          ><button
+            id="save-settings"
+            class="button button-primary"
+            value="default"
+          >
+            <i class="fa-solid fa-floppy-disk" aria-hidden="true"></i> Save
+            changes
+          </button>
+        </div>
+        <hr />
+        <div class="danger-zone">
+          <p class="eyebrow">Danger Zone</p>
+          <h3>Clear All Data</h3>
+          <p>
+            This will permanently delete your profile, completed badge
+            selections, activity history, streaks, weekly progress, articles,
+            comments, wishes, and all other data stored by this application in
+            this browser.
+          </p>
+          <button id="reset-data" type="button" class="button button-danger">
+            <i class="fa-solid fa-trash-can" aria-hidden="true"></i> Clear All
+            Data
+          </button>
+        </div>
+      </form>
+    </dialog>
+    <dialog id="celebration-dialog" class="modal celebration">
+      <div>
+        <span class="celebration-icon" aria-hidden="true"
+          ><i class="fa-solid fa-trophy"></i
+        ></span>
+        <p class="eyebrow">Badge completed!</p>
+        <h2 id="celebration-title"></h2>
+        <p id="celebration-text"></p>
+        <form method="dialog">
+          <button class="button button-primary">Keep building</button>
+        </form>
+      </div>
+    </dialog>
+    <dialog id="reset-dialog" class="modal">
+      <form method="dialog">
+        <p class="eyebrow">This cannot be undone</p>
+        <h2>Are you sure?</h2>
+        <p>
+          All AWS Builder Center Tracker data stored in this browser will be
+          permanently deleted.
+        </p>
+        <div class="modal-actions">
+          <button class="button button-secondary" value="cancel">Cancel</button
+          ><button
+            id="confirm-reset"
+            class="button button-danger"
+            value="confirm"
+          >
+            <i class="fa-solid fa-trash-can" aria-hidden="true"></i> Clear All
+            Data
+          </button>
+        </div>
+      </form>
+    </dialog>
+    <div id="toast" role="status" aria-live="polite"></div>
+    <script src="app.js"></script>
+  </body>
+</html>
