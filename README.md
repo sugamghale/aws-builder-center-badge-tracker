@@ -4,16 +4,20 @@ A simple personal tool for tracking your AWS Builder Center badge progress.
 
 Use it to record daily activities, follow streaks, see your next badge goal, and keep your Builder Center routine on track.
 
+## Try the Tracker
+
+**Live Tracker:** https://awsbuilder.sugamghale.com.np/
+
 ## What you can do
 
-- Record visits, reading, comments, likes, and Wish votes
-- Follow 7-day, 30-day, and 90-day streaks
-- View activity in a calendar
-- Track weekly Wish voting and article publishing goals
-- See progress for all 21 badges
-- Mark badges you already earned before using the tracker
-- Add article and comment likes for creator/contributor badges
-- Save a backup and restore it later
+* Record visits, reading, comments, likes, and Wish votes
+* Follow 7-day, 30-day, and 90-day streaks
+* View activity in a calendar
+* Track weekly Wish voting and article publishing goals
+* See progress for all 21 badges
+* Mark badges you already earned before using the tracker
+* Add article and comment likes for creator/contributor badges
+* Save a backup and restore it later
 
 ## Getting started
 
@@ -27,10 +31,10 @@ Use it to record daily activities, follow streaks, see your next badge goal, and
 
 Your tracker data stays in your browser.
 
-- No AWS password is requested.
-- No AWS credentials are stored.
-- No activity data is sent anywhere.
-- The tracker does not connect to or verify activity on AWS Builder Center.
+* No AWS password is requested.
+* No AWS credentials are stored.
+* No activity data is sent anywhere.
+* The tracker does not connect to or verify activity on AWS Builder Center.
 
 This is a manual progress tool. You decide which activities to record.
 
@@ -38,11 +42,11 @@ This is a manual progress tool. You decide which activities to record.
 
 Open **Profile & settings** to:
 
-- Download a backup file
-- Import a previous backup
-- Edit your profile
-- Manage already-earned badges
-- Clear all tracker data from the current browser
+* Download a backup file
+* Import a previous backup
+* Edit your profile
+* Manage already-earned badges
+* Clear all tracker data from the current browser
 
 Download a backup before changing browsers or devices.
 
@@ -50,16 +54,27 @@ Download a backup before changing browsers or devices.
 
 Badge rewards, requirements, and eligibility can change. Always check AWS Builder Center for the latest official details.
 
-## More help
+## Articles and guides
 
-- [Step-by-step guide](../Step-by-step-guide.md)
-- [How I built this tracker](../ARTICLE.md)
+### Step-by-step guide
+
+Learn how to set up and use the tracker, record activities, manage badges, track weekly goals, and back up your progress.
+
+**Read the guide:**
+https://builder.aws.com/content/3JlTbvpIUHCxUosgsDcWn3OkLaA/aws-builder-center-badge-tracker-step-by-step-guide
+
+### How I built this tracker
+
+Interested in the development side? This article explains how I built the tracker with Vanilla JavaScript, including the localStorage data model, streak calculations, badge logic, calendar, and responsive interface.
+
+**Read the article:**
+https://builder.aws.com/content/3JlS45QfgOxZrGCHFRyoKN2KXZB/how-i-built-a-private-aws-builder-center-badge-tracker-with-vanilla-javascript
 
 ## Project files
 
-- `index.html` — page structure
-- `style.css` — visual design and responsive layout
-- `app.js` — tracker behavior and saved progress
+* `index.html` — page structure
+* `style.css` — visual design and responsive layout
+* `app.js` — tracker behavior and saved progress
 
 ---
 
