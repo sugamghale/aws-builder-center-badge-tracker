@@ -1023,6 +1023,10 @@
   });
   $("#weekly-article-form").addEventListener("submit", (e) => {
     e.preventDefault();
+    if (e.submitter?.value === "cancel") {
+      e.currentTarget.closest("dialog").close();
+      return;
+    }
     const form = e.currentTarget,
       values = new FormData(form),
       title = values.get("title").trim(),
@@ -1055,6 +1059,10 @@
   });
   $("#settings-form").addEventListener("submit", (e) => {
     e.preventDefault();
+    if (e.submitter?.value === "cancel") {
+      e.currentTarget.closest("dialog").close();
+      return;
+    }
     const form = e.currentTarget,
       f = new FormData(form),
       earned = selectedBadgeIds(form, "settings-earned-badge"),
