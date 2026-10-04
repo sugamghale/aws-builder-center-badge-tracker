@@ -352,7 +352,114 @@
       current++;
       cursor = addDays(cursor, -7);
     }
-    return { current, longest, weeks };
+    // runStart is the Monday of the first week in the current unbroken run.
+    const runStart = current ? addDays(cursor, 7) : null;
+    return { current, longest, weeks, runStart };
+  }
+  const fmtDay = (key) =>
+    formatDate(key, { weekday: "short", month: "short", day: "numeric" });
+  const fmtRange = (a, b) => (a === b ? fmtDay(a) : `${fmtDay(a)} – ${fmtDay(b)}`);
+  function weeklyEntries(type) {
+    return type === "wishVote"
+      ? datesFor("wishVote").map((date) => ({ date, label: "Wish vote" }))
+      : (data.weeklyArticles || [])
+          .filter((article) => article.date)
+          .map((article) => ({ date: article.date, label: article.title }))
+          .sort((a, b) => a.date.localeCompare(b.date));
+  }
+  // Weeks run Monday–Sunday. Any entry inside the next week keeps the streak, but
+  // repeating the same weekday rhythm (6–7 days after the last entry) is the safest
+  // target, so that is what we recommend. It never starts before the next Monday.
+  function nextWindow(anchor) {
+    const weekStart = addDays(weekKey(anchor), 7),
+      early = addDays(anchor, 6),
+      start = early > weekStart ? early : weekStart,
+      late = addDays(anchor, 7);
+    return {
+      start,
+      end: late < start ? start : late,
+      weekStart,
+      weekEnd: addDays(weekStart, 6),
+    };
+  }
+  // Where the user stands today for a weekly goal: done, due, coming up, or open.
+  function weeklyPlan(type) {
+    const entries = weeklyEntries(type),
+      today = todayKey(),
+      thisWeek = weekKey(today),
+      weekEnd = addDays(thisWeek, 6),
+      latestIn = (week) =>
+        entries
+          .filter((e) => weekKey(e.date) === week)
+          .map((e) => e.date)
+          .sort()
+          .pop() || null,
+      base = { weekEnd, daysLeft: diffDays(today, weekEnd) },
+      doneDate = latestIn(thisWeek);
+    if (doneDate)
+      return { ...base, status: "done", doneDate, next: nextWindow(doneDate) };
+    const anchor = latestIn(addDays(thisWeek, -7));
+    if (anchor) {
+      const win = nextWindow(anchor);
+      return {
+        ...base,
+        status: today < win.start ? "soon" : "due",
+        anchor,
+        window: win,
+        inWindow: today >= win.start && today <= win.end,
+      };
+    }
+    return { ...base, status: "open" };
+  }
+  const WEEKLY_GOALS = {
+    articles: {
+      icon: "fa-pen-nib",
+      title: "Publish your weekly article",
+      action: "Add published article",
+      actionIcon: "fa-plus",
+    },
+    wishVote: {
+      icon: "fa-thumbs-up",
+      title: "Vote on a Wish",
+      action: "Log today’s Wish vote",
+      actionIcon: "fa-check",
+    },
+  };
+  // Turns a plan into the label and sentence shown on the Dashboard and Weekly goals pages.
+  function planMessage(type, plan) {
+    const noun = type === "articles" ? "an article" : "a Wish vote";
+    const lastDay = plan.daysLeft === 0;
+    if (plan.status === "done")
+      return {
+        pill: "Done this week",
+        tone: "complete",
+        text: `Logged on ${fmtDay(plan.doneDate)}. Next recommended window: ${fmtRange(plan.next.start, plan.next.end)}. Any day from ${fmtDay(plan.next.weekStart)} to ${fmtDay(plan.next.weekEnd)} still keeps your streak.`,
+      };
+    if (plan.status === "soon")
+      return {
+        pill: "Coming up",
+        tone: "start",
+        text: `Last entry: ${fmtDay(plan.anchor)}. Recommended window: ${fmtRange(plan.window.start, plan.window.end)}. Logging ${noun} any time up to ${fmtDay(plan.weekEnd)} still keeps your streak.`,
+      };
+    if (plan.status === "due") {
+      const base = `Last entry: ${fmtDay(plan.anchor)}. `;
+      if (plan.inWindow)
+        return {
+          pill: "Due today",
+          tone: "due",
+          text: `${base}Today is inside your recommended window (${fmtRange(plan.window.start, plan.window.end)}). Log ${noun} to keep your weekly streak going.`,
+        };
+      return {
+        pill: lastDay ? "Last day" : "Overdue",
+        tone: "due",
+        text: `${base}Your recommended window (${fmtRange(plan.window.start, plan.window.end)}) has passed, but ${noun} logged by ${fmtDay(plan.weekEnd)} still keeps the streak alive${lastDay ? ". That is today." : "."}`,
+      };
+    }
+    return {
+      pill: lastDay ? "Last day" : "Open this week",
+      tone: lastDay ? "due" : "progressing",
+      text: `No weekly streak is running yet. Log ${noun} on any day up to ${fmtDay(plan.weekEnd)} to ${lastDay ? "count this week" : "start one"}.`,
+    };
   }
   function completionDate(badge) {
     const record = data.badges[badge.id];
@@ -587,7 +694,7 @@
     const today = getActivity(todayKey()),
       done = DAILY_KEYS.filter((k) => today[k]).length;
     $("#view-dashboard").innerHTML =
-      `<section class="grid grid-4"><article class="card hero-card" style="grid-column:span 2"><p class="eyebrow">Welcome back, ${escapeHtml(data.profile.fullName.split(" ")[0])}</p><h2>${overall.complete} / 21 badges</h2><p class="subtle">Make each activity count toward your next badge.</p><div class="hero-progress"><span class="score">${percent}% complete</span><div class="progress"><span style="width:${percent}%"></span></div></div></article><article class="card metric-card"><p>Current daily streak</p><div class="metric">${daily} <small>days</small></div><p>Across visits, comments & likes</p></article><article class="card metric-card"><p>Days tracking</p><div class="metric">${startDays}</div><p>Started ${formatDate(data.profile.startDate, { month: "short", day: "numeric" })}</p></article></section><section class="grid grid-2"><article class="card"><div class="section-heading"><div><p class="eyebrow">Today</p><h2>${formatDate(todayKey())}</h2></div><span class="pill ${done === 5 ? "complete" : "progressing"}">${done}/5 complete</span></div>${activityChecklist(todayKey(), true)}<div class="progress green" style="margin-top:1rem"><span style="width:${(done / 5) * 100}%"></span></div><button id="routine-complete" class="button button-secondary full" ${done === 5 ? "disabled" : ""}>${done === 5 ? "Today’s routine is complete" : "Mark today’s routine complete"}</button></article><article class="card"><p class="eyebrow">What should I do today?</p><h2>Keep your momentum</h2><ul class="detail-list"><li>Visit Builder Center and read one article.</li><li>Leave one meaningful comment and like useful content.</li><li>Vote on a Wish.</li><li>${weeklyStreak("articles").weeks.includes(weekKey(todayKey())) ? "Article publishing is logged this week." : "Publish an article this week."}</li></ul>${done === 5 ? '<div class="notice"><strong>Today’s routine is complete.</strong>Keep your streak alive tomorrow.</div>' : riskNotices()}</article></section><section><div class="section-heading"><div><p class="eyebrow">Next milestone</p><h2>Build your consistency</h2></div></div><article class="card">${milestoneRows()}</article></section><section><div class="section-heading"><div><p class="eyebrow">Your Builder Journey</p><h2>Progress at a glance</h2></div></div><div class="grid grid-3"><article class="card metric-card"><p>Quick Wins</p><div class="metric">${quick.filter((x) => x.complete).length} / ${quick.length}</div><p>Build your early foundation</p></article><article class="card metric-card"><p>Consistency</p><div class="metric">${consistency.filter((x) => x.complete).length} / ${consistency.length}</div><p>Keep the habits going</p></article><article class="card metric-card"><p>Longest daily streak</p><div class="metric">${longest} days</div><p>Your personal best</p></article></div></section><section><div class="section-heading"><div><p class="eyebrow">Badge progress</p><h2>Continue your journey</h2></div><button class="button button-secondary" data-go="badges">View all badges</button></div><div class="badges-grid">${
+      `<section class="grid grid-4"><article class="card hero-card" style="grid-column:span 2"><p class="eyebrow">Welcome back, ${escapeHtml(data.profile.fullName.split(" ")[0])}</p><h2>${overall.complete} / 21 badges</h2><p class="subtle">Make each activity count toward your next badge.</p><div class="hero-progress"><span class="score">${percent}% complete</span><div class="progress"><span style="width:${percent}%"></span></div></div></article><article class="card metric-card"><p>Current daily streak</p><div class="metric">${daily} <small>days</small></div><p>Across visits, comments & likes</p></article><article class="card metric-card"><p>Days tracking</p><div class="metric">${startDays}</div><p>Started ${formatDate(data.profile.startDate, { month: "short", day: "numeric" })}</p></article></section>${weeklyTodo()}<section class="grid grid-2"><article class="card"><div class="section-heading"><div><p class="eyebrow">Today</p><h2>${formatDate(todayKey())}</h2></div><span class="pill ${done === 5 ? "complete" : "progressing"}">${done}/5 complete</span></div>${activityChecklist(todayKey(), true)}<div class="progress green" style="margin-top:1rem"><span style="width:${(done / 5) * 100}%"></span></div><button id="routine-complete" class="button button-secondary full" ${done === 5 ? "disabled" : ""}>${done === 5 ? "Today’s routine is complete" : "Mark today’s routine complete"}</button></article><article class="card"><p class="eyebrow">What should I do today?</p><h2>Keep your momentum</h2><ul class="detail-list"><li>Visit Builder Center and read one article.</li><li>Leave one meaningful comment and like useful content.</li><li>${weeklyTodayLine("wishVote")}</li><li>${weeklyTodayLine("articles")}</li></ul>${done === 5 ? '<div class="notice"><strong>Today’s routine is complete.</strong>Keep your streak alive tomorrow.</div>' : riskNotices()}</article></section><section><div class="section-heading"><div><p class="eyebrow">Next milestone</p><h2>Build your consistency</h2></div></div><article class="card">${milestoneRows()}</article></section><section><div class="section-heading"><div><p class="eyebrow">Your Builder Journey</p><h2>Progress at a glance</h2></div></div><div class="grid grid-3"><article class="card metric-card"><p>Quick Wins</p><div class="metric">${quick.filter((x) => x.complete).length} / ${quick.length}</div><p>Build your early foundation</p></article><article class="card metric-card"><p>Consistency</p><div class="metric">${consistency.filter((x) => x.complete).length} / ${consistency.length}</div><p>Keep the habits going</p></article><article class="card metric-card"><p>Longest daily streak</p><div class="metric">${longest} days</div><p>Your personal best</p></article></div></section><section><div class="section-heading"><div><p class="eyebrow">Charts</p><h2>Your progress in detail</h2></div></div><div class="grid grid-2" id="dashboard-charts"></div></section><section><div class="section-heading"><div><p class="eyebrow">Badge progress</p><h2>Continue your journey</h2></div><button class="button button-secondary" data-go="badges">View all badges</button></div><div class="badges-grid">${
         overall.entries
           .filter((x) => !x.complete)
           .slice(0, 3)
@@ -595,6 +702,7 @@
           .join("") ||
         '<div class="card"><strong>All badges completed!</strong><p class="subtle">An outstanding Builder Center journey.</p></div>'
       }</div></section>${studentRewards()}`;
+    renderCharts();
   }
   function studentRewards() {
     return `<section><div class="section-heading"><div><p class="eyebrow">Informational only</p><h2>Student Rewards</h2></div></div><article class="card"><p class="subtle">Rewards and eligibility may change. Check AWS Builder Center for the current official terms. This tracker cannot verify eligibility.</p><div class="reward-grid"><div class="reward"><strong>7 badges</strong>$10 credits</div><div class="reward"><strong>14 badges</strong>Additional $20 credits</div><div class="reward"><strong>21 badges</strong>$100 Certification Voucher<br>+ 12 months Skill Builder Premium</div></div><div class="link-list"><a href="https://builder.aws.com/" target="_blank" rel="noopener">AWS Builder Center</a><a href="https://builder.aws.com/profile" target="_blank" rel="noopener">Profile / Badges</a><a href="https://builder.aws.com/" target="_blank" rel="noopener">AWS Student Rewards</a></div></article></section>`;
@@ -662,20 +770,321 @@
       `<section class="card"><div class="section-heading"><div><p class="eyebrow">All 21 badges</p><h2>Find your next win</h2></div><span class="score">${allProgress().complete} completed</span></div><div class="badge-controls"><input id="badge-search" type="search" placeholder="Search badges..." aria-label="Search badges"><select id="badge-filter" aria-label="Filter badges">${filterOptions.map(([v, l]) => `<option value="${v}">${l}</option>`).join("")}</select></div><div id="badges-grid" class="badges-grid">${BADGES.map(badgeCard).join("")}</div></section>`;
   }
   function renderWeekly() {
-    const nowWeek = weekKey(todayKey());
+    const thisWeek = weekKey(todayKey());
+    // Four Monday–Sunday weeks that start where the running streak started (or this week).
     function rows(type) {
       const info = weeklyStreak(type),
-        weeks = [];
-      for (let i = 3; i >= 0; i--) weeks.push(addDays(nowWeek, -7 * i));
-      return weeks
-        .map((week, index) => {
-          const done = info.weeks.includes(week);
-          return `<div class="week-row"><span><strong>Week ${index + 1}</strong><small>${formatDate(week, { month: "short", day: "numeric" })}</small></span><strong>${done ? '<i class="fa-solid fa-circle-check" aria-hidden="true"></i> Completed' : '<i class="fa-regular fa-circle" aria-hidden="true"></i> Not yet'}</strong></div>`;
+        entries = weeklyEntries(type),
+        first = info.runStart || thisWeek;
+      return [0, 1, 2, 3]
+        .map((index) => {
+          const week = addDays(first, 7 * index),
+            weekEnd = addDays(week, 6),
+            inWeek = entries.filter((e) => weekKey(e.date) === week),
+            done = inWeek.length > 0;
+          let state, label, hint = "";
+          if (done) {
+            state = "done";
+            label =
+              '<i class="fa-solid fa-circle-check" aria-hidden="true"></i> Completed';
+          } else if (week === thisWeek) {
+            state = "current";
+            label = `<i class="fa-solid fa-hourglass-half" aria-hidden="true"></i> Due by ${fmtDay(weekEnd)}`;
+          } else if (week > thisWeek) {
+            state = "upcoming";
+            label =
+              '<i class="fa-regular fa-circle" aria-hidden="true"></i> Upcoming';
+            const before = entries
+              .filter((e) => weekKey(e.date) === addDays(week, -7))
+              .map((e) => e.date)
+              .sort()
+              .pop();
+            if (before) {
+              const w = nextWindow(before);
+              hint = `Recommended: ${fmtRange(w.start, w.end)}`;
+            }
+          } else {
+            state = "missed";
+            label =
+              '<i class="fa-solid fa-circle-xmark" aria-hidden="true"></i> Missed';
+          }
+          const logged = inWeek
+            .map(
+              (e) =>
+                `<small class="week-entry">${fmtDay(e.date)} · ${escapeHtml(e.label)}</small>`,
+            )
+            .join("");
+          return `<div class="week-row ${state}"><span class="week-info"><strong>Week ${index + 1}</strong><small>${formatDate(week, { month: "short", day: "numeric" })} – ${formatDate(weekEnd, { month: "short", day: "numeric" })}</small>${logged}${hint ? `<small class="week-hint">${hint}</small>` : ""}</span><strong>${label}</strong></div>`;
         })
         .join("");
     }
+    function goalCard(type, eyebrow, title, intro, rule) {
+      const plan = weeklyPlan(type),
+        msg = planMessage(type, plan),
+        info = weeklyStreak(type),
+        goal = WEEKLY_GOALS[type],
+        action = plan.status === "done" ? "" : weeklyActionButton(type);
+      return `<article class="card weekly-goal-card"><p class="eyebrow"><i class="fa-solid ${goal.icon}" aria-hidden="true"></i> ${eyebrow}</p><h2>${title}</h2><p class="subtle">${intro}</p><div class="weekly-status ${msg.tone}"><span class="pill ${msg.tone}">${msg.pill}</span><p>${msg.text}</p></div>${type === "articles" ? '<button class="button button-secondary weekly-card-action" data-weekly-action="articles"><i class="fa-solid fa-plus" aria-hidden="true"></i> Add published article</button>' : action}<div class="weekly-list">${rows(type)}</div><div class="notice"><strong>Current: ${info.current} ${info.current === 1 ? "week" : "weeks"} · Longest: ${info.longest} ${info.longest === 1 ? "week" : "weeks"}${info.current > 4 ? " · Goal reached" : ""}</strong>${rule}</div></article>`;
+    }
     $("#view-weekly").innerHTML =
-      `<section class="grid grid-2"><article class="card weekly-goal-card"><p class="eyebrow"><i class="fa-solid fa-thumbs-up" aria-hidden="true"></i> Wish voting</p><h2>4-Week Wish Vote Streak</h2><p class="subtle">Record a Wish vote on its actual date in the Daily Tracker.</p><div class="weekly-list">${rows("wishVote")}</div><div class="notice"><strong>Longest: ${weeklyStreak("wishVote").longest} weeks</strong>One vote in each Monday–Sunday week counts.</div></article><article class="card weekly-goal-card"><p class="eyebrow"><i class="fa-solid fa-pen-nib" aria-hidden="true"></i> Article publishing</p><h2>4-Week Article Streak</h2><p class="subtle">Add one article at a time using its actual published date.</p><button id="add-article-weekly" class="button button-secondary weekly-card-action"><i class="fa-solid fa-plus" aria-hidden="true"></i> Add published article</button><div class="weekly-list">${rows("articles")}</div><div class="notice"><strong>Longest: ${weeklyStreak("articles").longest} weeks</strong>One article in each Monday–Sunday week counts.</div></article></section>`;
+      `<section class="grid grid-2">${goalCard("wishVote", "Wish voting", "4-Week Wish Vote Streak", "Record a Wish vote on its actual date in the Daily Tracker, or log today’s vote here.", "One vote in each Monday–Sunday week counts.")}${goalCard("articles", "Article publishing", "4-Week Article Streak", "Add one article at a time using its actual published date.", "One article in each Monday–Sunday week counts.")}</section>`;
+  }
+  function weeklyActionButton(type) {
+    const goal = WEEKLY_GOALS[type];
+    return `<button class="button ${type === "articles" ? "button-primary" : "button-secondary"} weekly-card-action" data-weekly-action="${type}"><i class="fa-solid ${goal.actionIcon}" aria-hidden="true"></i> ${goal.action}</button>`;
+  }
+  // Dashboard to-do: shows each weekly goal and lights up on the day it is due.
+  function weeklyTodo() {
+    const cards = ["articles", "wishVote"]
+      .map((type) => {
+        const plan = weeklyPlan(type),
+          msg = planMessage(type, plan),
+          goal = WEEKLY_GOALS[type];
+        return `<article class="card todo-card ${msg.tone}"><div class="todo-head"><span class="todo-icon" aria-hidden="true"><i class="fa-solid ${goal.icon}"></i></span><div><h3>${goal.title}</h3><span class="pill ${msg.tone}">${msg.pill}</span></div></div><p class="subtle">${msg.text}</p>${plan.status === "done" ? "" : weeklyActionButton(type)}</article>`;
+      })
+      .join("");
+    return `<section class="weekly-todo"><div class="section-heading"><div><p class="eyebrow">Weekly goals</p><h2>This week’s to-do</h2></div><button class="button button-secondary" data-go="weekly">View weekly goals</button></div><div class="grid grid-2">${cards}</div></section>`;
+  }
+  function weeklyTodayLine(type) {
+    const plan = weeklyPlan(type),
+      article = type === "articles";
+    if (plan.status === "done")
+      return article
+        ? "Weekly article is logged this week."
+        : "Weekly Wish vote is logged this week.";
+    if (plan.status === "soon")
+      return `${article ? "Publish your next article" : "Vote on a Wish"} around ${fmtRange(plan.window.start, plan.window.end)}.`;
+    return article
+      ? plan.status === "due" && plan.inWindow
+        ? "Publish your weekly article today."
+        : `Publish an article by ${fmtDay(plan.weekEnd)} to keep your weekly streak.`
+      : plan.status === "due" && plan.inWindow
+        ? "Vote on a Wish today for your weekly streak."
+        : `Vote on a Wish by ${fmtDay(plan.weekEnd)} to keep your weekly streak.`;
+  }
+  // ---- Interactive donut charts (plain SVG, no library) ----
+  const chartState = {
+    badge: { tab: "all", pinned: null },
+    activity: { tab: 30, pinned: null },
+  };
+  const chartModels = {};
+  const STATUS_COLORS = {
+    complete: "#16794c",
+    progress: "#ff9900",
+    start: "#c5cfd8",
+  };
+  const ACTIVITY_COLORS = {
+    visit: "#2469a0",
+    read: "#0f8b8d",
+    comment: "#16794c",
+    like: "#d9480f",
+    wishVote: "#7b4bb7",
+  };
+  function badgeChartModel() {
+    const tab = chartState.badge.tab,
+      tabs = [
+        ["all", "All 21"],
+        ["quick", "Quick Wins"],
+        ["consistency", "Consistency"],
+        ["7", "7-Day"],
+        ["30", "30-Day"],
+        ["90", "90-Day"],
+      ],
+      entries = allProgress().entries.filter(({ badge }) =>
+        tab === "all"
+          ? true
+          : tab === "quick" || tab === "consistency"
+            ? badge.tier === tab
+            : badge.type === "streak" && badge.target === Number(tab),
+      );
+    const list = (items) =>
+      items.length
+        ? `<ul class="chart-items">${items.join("")}</ul>`
+        : '<p class="subtle">Nothing here yet.</p>';
+    const unit = (b) => (b.type === "streak" ? "days" : b.type.includes("eekly") ? "weeks" : "");
+    const item = (x, text) =>
+      `<li><span>${x.badge.name}</span><small>${text}</small></li>`;
+    let slices, centerValue, centerLabel, summary;
+    if (/^\d+$/.test(tab)) {
+      // Milestone tabs show how many of the required days have been reached per activity.
+      const needed = Number(tab) * entries.length,
+        reached = entries.reduce((n, x) => n + x.value, 0);
+      slices = entries
+        .filter((x) => x.value > 0)
+        .map((x) => ({
+          key: x.badge.id,
+          label: x.badge.activity[0].toUpperCase() + x.badge.activity.slice(1),
+          value: x.value,
+          color: ACTIVITY_COLORS[x.badge.activity],
+          detail: `<h4>${x.badge.name}</h4><p>${x.earned ? "Already earned" : `${x.value} of ${x.target} days${x.complete ? " · Completed" : ""}`}</p><div class="progress ${x.complete ? "green" : ""}"><span style="width:${(x.value / x.target) * 100}%"></span></div>`,
+        }));
+      slices.push({
+        key: "remaining",
+        label: "Still to go",
+        value: needed - reached,
+        color: STATUS_COLORS.start,
+        detail: `<h4>Still to go</h4><p>${needed - reached} of ${needed} streak days left across the three ${tab}-day badges.</p>`,
+      });
+      centerValue = `${Math.round((reached / needed) * 100)}%`;
+      centerLabel = `of ${tab}-day goals`;
+      summary = `${entries.filter((x) => x.complete).length} of ${entries.length} ${tab}-day badges completed. Each colored slice is the longest streak reached for that activity.`;
+    } else {
+      const groups = {
+        complete: entries.filter((x) => x.complete),
+        progress: entries.filter((x) => !x.complete && x.value > 0),
+        start: entries.filter((x) => !x.complete && !x.value),
+      };
+      const names = {
+        complete: "Completed",
+        progress: "In progress",
+        start: "Not started",
+      };
+      slices = Object.keys(groups)
+        .filter((k) => groups[k].length)
+        .map((k) => ({
+          key: k,
+          label: names[k],
+          value: groups[k].length,
+          color: STATUS_COLORS[k],
+          detail: `<h4>${names[k]} · ${groups[k].length}</h4>${list(
+            groups[k].map((x) =>
+              item(
+                x,
+                k === "complete"
+                  ? x.earned
+                    ? "Earned"
+                    : "Done"
+                  : `${x.value} / ${x.target} ${unit(x.badge)}`.trim(),
+              ),
+            ),
+          )}`,
+        }));
+      centerValue = `${groups.complete.length}/${entries.length}`;
+      centerLabel = "badges completed";
+      summary = `${Math.round((groups.complete.length / entries.length) * 100)}% of these badges are complete.`;
+    }
+    return {
+      id: "badge",
+      eyebrow: "Badge progress",
+      title: "Where your badges stand",
+      tabs,
+      tab,
+      slices,
+      centerValue,
+      centerLabel,
+      summary,
+    };
+  }
+  function activityChartModel() {
+    const range = chartState.activity.tab,
+      today = todayKey(),
+      recorded = Object.keys(data.activities).sort(),
+      trackedFrom =
+        recorded.length && recorded[0] < data.profile.startDate
+          ? recorded[0]
+          : data.profile.startDate,
+      windowStart = addDays(today, -(range - 1)),
+      from = [trackedFrom, windowStart, today].sort()[1],
+      days = Math.max(1, diffDays(from, today) + 1),
+      counts = Object.fromEntries(DAILY_KEYS.map((k) => [k, 0]));
+    let fullDays = 0;
+    for (let i = 0; i < days; i++) {
+      const a = getActivity(addDays(from, i));
+      let n = 0;
+      DAILY_KEYS.forEach((k) => {
+        if (a[k]) {
+          counts[k]++;
+          n++;
+        }
+      });
+      if (n === DAILY_KEYS.length) fullDays++;
+    }
+    const possible = days * DAILY_KEYS.length,
+      total = DAILY_KEYS.reduce((n, k) => n + counts[k], 0),
+      slices = DAILY_KEYS.filter((k) => counts[k]).map((k) => ({
+        key: k,
+        label: ACTIVITY_META[k][0],
+        value: counts[k],
+        color: ACTIVITY_COLORS[k],
+        detail: `<h4>${ACTIVITY_META[k][0]}</h4><p>${counts[k]} of ${days} days (${Math.round((counts[k] / days) * 100)}%)</p><div class="progress green"><span style="width:${(counts[k] / days) * 100}%"></span></div>`,
+      }));
+    slices.push({
+      key: "missed",
+      label: "Not logged",
+      value: possible - total,
+      color: STATUS_COLORS.start,
+      detail: `<h4>Not logged</h4><p>${possible - total} of ${possible} possible check-ins were left open.</p>`,
+    });
+    return {
+      id: "activity",
+      eyebrow: "Daily activity",
+      title: "What you logged",
+      tabs: [
+        [7, "7 days"],
+        [30, "30 days"],
+        [90, "90 days"],
+      ],
+      tab: range,
+      slices,
+      centerValue: `${Math.round((total / possible) * 100)}%`,
+      centerLabel: "logged",
+      summary: `${total} of ${possible} check-ins across ${days} ${days === 1 ? "day" : "days"} · ${fullDays} full-routine ${fullDays === 1 ? "day" : "days"}.`,
+    };
+  }
+  function chartHtml(m) {
+    m.slices = m.slices.filter((s) => s.value > 0);
+    chartModels[m.id] = m;
+    const R = 48,
+      C = 2 * Math.PI * R,
+      total = m.slices.reduce((n, s) => n + s.value, 0);
+    let offset = 0;
+    const rings = m.slices
+      .filter((s) => s.value > 0)
+      .map((s) => {
+        const len = (s.value / total) * C,
+          ring = `<circle class="donut-slice" data-chart-slice="${s.key}" data-chart="${m.id}" cx="60" cy="60" r="${R}" fill="none" stroke="${s.color}" stroke-dasharray="${len} ${C - len}" stroke-dashoffset="${-offset}" tabindex="0" role="button" aria-label="${s.label}: ${s.value} of ${total} (${Math.round((s.value / total) * 100)}%)"></circle>`;
+        offset += len;
+        return ring;
+      })
+      .join("");
+    const legend = m.slices
+      .map(
+        (s) =>
+          `<button type="button" class="legend-item" data-chart-slice="${s.key}" data-chart="${m.id}"><i style="background:${s.color}" aria-hidden="true"></i><span>${s.label}</span><strong>${s.value}</strong></button>`,
+      )
+      .join("");
+    const tabs = m.tabs
+      .map(
+        ([value, label]) =>
+          `<button type="button" class="chart-tab" data-chart-tab="${value}" data-chart="${m.id}" aria-pressed="${String(value) === String(m.tab)}">${label}</button>`,
+      )
+      .join("");
+    return `<article class="card chart-card" id="chart-${m.id}"><p class="eyebrow">${m.eyebrow}</p><h2>${m.title}</h2><div class="chart-tabs" role="group" aria-label="${m.title} range">${tabs}</div><div class="chart-body"><div class="donut-wrap"><svg class="donut" viewBox="0 0 120 120" role="group" aria-label="${m.title}"><circle cx="60" cy="60" r="${R}" fill="none" stroke="#eef1f4" stroke-width="16"></circle>${rings}</svg><div class="donut-center" aria-hidden="true"><strong class="donut-center-value">${m.centerValue}</strong><small class="donut-center-label">${m.centerLabel}</small></div></div><div class="chart-legend">${legend}</div></div><p class="subtle chart-summary">${m.summary}</p><div class="chart-detail" aria-live="polite"></div></article>`;
+  }
+  function renderCharts() {
+    const host = $("#dashboard-charts");
+    if (!host) return;
+    host.innerHTML = chartHtml(badgeChartModel()) + chartHtml(activityChartModel());
+    Object.keys(chartState).forEach((id) => showSlice(id, chartState[id].pinned));
+  }
+  // Updates the donut centre and detail panel for a hovered, focused, or pinned slice.
+  function showSlice(id, key) {
+    const m = chartModels[id],
+      root = $(`#chart-${id}`);
+    if (!m || !root) return;
+    const s = m.slices.find((x) => x.key === key),
+      total = m.slices.reduce((n, x) => n + x.value, 0);
+    root.classList.toggle("has-active", Boolean(s));
+    $$("[data-chart-slice]", root).forEach((el) =>
+      el.classList.toggle("active", el.dataset.chartSlice === key && Boolean(s)),
+    );
+    $(".donut-center-value", root).textContent = s
+      ? `${Math.round((s.value / total) * 100)}%`
+      : m.centerValue;
+    $(".donut-center-label", root).textContent = s ? s.label : m.centerLabel;
+    $(".chart-detail", root).innerHTML = s
+      ? s.detail
+      : '<p class="subtle">Hover, tap, or focus a slice for details.</p>';
   }
   function creatorProfileSection() {
     return `<section class="creator-section card" aria-labelledby="creator-title"><div class="creator-profile-layout"><img class="creator-profile-photo" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjETkyahNf4nfo5HgkZ-Nb4FAyla5TAIE6kxHYRoOWIS_-qF7zJdVItQCYtIkHuxtufjyIMqYWImLfNgKmlIsYDe0Zskn6YrkMq4r3655z5XQtZW9iAefN77LyiKXQgdIb_KfR4Jt9fVbCI5eP4QDWtnfTxYIbT7BkKyHTbC6mriAaM3UbcROMxNFSdXvtz/s875/photo.png" alt="Sugam Ghale" draggable="false" referrerpolicy="no-referrer"><div><p class="eyebrow">Created by</p><h2 id="creator-title">Sugam Ghale</h2><p class="creator-role">Student Builder Group Leader</p><p class="subtle">Building, learning, and sharing with the AWS community.</p><div class="creator-social-links"><a class="creator-social-link" href="https://builder.aws.com/community/@sugamghale" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-aws" aria-hidden="true"></i> AWS Builder Center <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a><a class="creator-social-link" href="https://www.linkedin.com/in/sugamghale/" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-linkedin" aria-hidden="true"></i> LinkedIn <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a><a class="creator-social-link" href="https://github.com/sugamghale" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-github" aria-hidden="true"></i> GitHub <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a></div></div></div></section>`;
@@ -817,9 +1226,27 @@
   // Event delegation keeps cards, dynamic pages, dialogs, and forms lightweight.
   document.addEventListener("click", (e) => {
     const target = e.target.closest(
-      "[data-view],[data-go],[data-badge],[data-calendar-date],[data-cal-shift],#routine-complete,#mobile-menu,#header-settings,#profile-settings,#profile-export,#export-data,#reset-data,#confirm-reset,[data-close-badge],[data-toggle-badge],[data-add-record],[data-delete-record],#add-article-weekly",
+      "[data-view],[data-go],[data-badge],[data-calendar-date],[data-cal-shift],#routine-complete,#mobile-menu,#header-settings,#profile-settings,#profile-export,#export-data,#reset-data,#confirm-reset,[data-close-badge],[data-toggle-badge],[data-add-record],[data-delete-record],#add-article-weekly,[data-weekly-action],[data-chart-tab],[data-chart-slice]",
     );
     if (!target) return;
+    if (target.dataset.chartTab !== undefined) {
+      const id = target.dataset.chart;
+      chartState[id].tab = id === "activity" ? Number(target.dataset.chartTab) : target.dataset.chartTab;
+      chartState[id].pinned = null;
+      renderCharts();
+      return;
+    }
+    if (target.dataset.chartSlice !== undefined) {
+      const state = chartState[target.dataset.chart];
+      state.pinned = state.pinned === target.dataset.chartSlice ? null : target.dataset.chartSlice;
+      showSlice(target.dataset.chart, state.pinned);
+      return;
+    }
+    if (target.dataset.weeklyAction === "wishVote") {
+      setActivity(todayKey(), "wishVote", true);
+      showToast("Wish vote logged for today.");
+      return;
+    }
     if (target.dataset.view) {
       view = target.dataset.view;
       render();
@@ -917,7 +1344,7 @@
       render();
       return;
     }
-    if (target.id === "add-article-weekly") {
+    if (target.id === "add-article-weekly" || target.dataset.weeklyAction === "articles") {
       const form = $("#weekly-article-form");
       form.reset();
       $('input[name="date"]', form).value = todayKey();
@@ -1013,6 +1440,27 @@
       return;
     }
   });
+  document.addEventListener("keydown", (e) => {
+    const slice = e.target.closest?.("circle[data-chart-slice]");
+    if (slice && (e.key === "Enter" || e.key === " ")) {
+      e.preventDefault();
+      slice.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    }
+  });
+  // Hover/focus previews a slice; leaving restores the pinned (clicked) slice.
+  ["mouseover", "focusin"].forEach((type) =>
+    document.addEventListener(type, (e) => {
+      const slice = e.target.closest?.("[data-chart-slice]");
+      if (slice) showSlice(slice.dataset.chart, slice.dataset.chartSlice);
+    }),
+  );
+  ["mouseout", "focusout"].forEach((type) =>
+    document.addEventListener(type, (e) => {
+      const slice = e.target.closest?.("[data-chart-slice]");
+      if (slice && !slice.contains(e.relatedTarget))
+        showSlice(slice.dataset.chart, chartState[slice.dataset.chart].pinned);
+    }),
+  );
   document.addEventListener("input", (e) => {
     if (e.target.id === "badge-search") {
       filterBadges();
