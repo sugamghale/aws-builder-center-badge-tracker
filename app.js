@@ -820,10 +820,18 @@
     }
     function goalCard(type, eyebrow, title, intro, rule) {
       const plan = weeklyPlan(type),
-        msg = planMessage(type, plan),
+        earned = weeklyBadgeEarned(type),
+        msg = earned
+          ? {
+              pill: "Badge earned",
+              tone: "complete",
+              text: "You have already earned this badge, so no more weekly entries are needed.",
+            }
+          : planMessage(type, plan),
         info = weeklyStreak(type),
         goal = WEEKLY_GOALS[type],
-        action = plan.status === "done" ? "" : weeklyActionButton(type);
+        action =
+          earned || plan.status === "done" ? "" : weeklyActionButton(type);
       return `<article class="card weekly-goal-card"><p class="eyebrow"><i class="fa-solid ${goal.icon}" aria-hidden="true"></i> ${eyebrow}</p><h2>${title}</h2><p class="subtle">${intro}</p><div class="weekly-status ${msg.tone}"><span class="pill ${msg.tone}">${msg.pill}</span><p>${msg.text}</p></div>${type === "articles" && !earned ? '<button class="button button-secondary weekly-card-action" data-weekly-action="articles"><i class="fa-solid fa-plus" aria-hidden="true"></i> Add published article</button>' : action}<div class="weekly-list">${rows(type)}</div><div class="notice"><strong>Current: ${info.current} ${info.current === 1 ? "week" : "weeks"} · Longest: ${info.longest} ${info.longest === 1 ? "week" : "weeks"}${info.current > 4 ? " · Goal reached" : ""}</strong>${rule}</div></article>`;
     }
     $("#view-weekly").innerHTML =
@@ -835,7 +843,11 @@
   }
   // Dashboard to-do: shows each weekly goal and lights up on the day it is due.
   function weeklyTodo() {
-    const cards = ["articles", "wishVote"]
+    const pending = ["articles", "wishVote"].filter(
+      (type) => !weeklyBadgeEarned(type),
+    );
+    if (!pending.length) return "";
+    const cards = pending
       .map((type) => {
         const plan = weeklyPlan(type),
           msg = planMessage(type, plan),
