@@ -21,97 +21,168 @@
     <meta name="twitter:title" content="All 21 AWS Builder Center Badges and Requirements" />
     <meta name="twitter:description" content="Every AWS Builder Center badge the tracker follows, from Hello, World! to the 90-day streaks, with what each one requires." />
     <meta name="twitter:image" content="https://awsbuilder.sugamghale.com.np/og-image.png" />
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Badge Tracker","item":"https://awsbuilder.sugamghale.com.np/"},{"@type":"ListItem","position":2,"name":"All 21 AWS Builder Center badges explained","item":"https://awsbuilder.sugamghale.com.np/badges/"}]}</script>
+    <script type="speculationrules">
+      {
+        "prerender": [{ "urls": ["/guide/", "/badges/", "/faq/"], "eagerness": "moderate" }],
+        "prefetch": [{ "urls": ["/"], "eagerness": "moderate" }]
+      }
+    </script>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" referrerpolicy="no-referrer" />
     <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
     <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="stylesheet" href="/style.css" />
     <link rel="stylesheet" href="/pages.css" />
-    <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Badge Tracker","item":"https://awsbuilder.sugamghale.com.np/"},{"@type":"ListItem","position":2,"name":"All 21 AWS Builder Center badges explained","item":"https://awsbuilder.sugamghale.com.np/badges/"}]}</script>
   </head>
   <body>
-    <a class="skip-link" href="#content">Skip to content</a>
-    <header class="site-header">
-      <div class="site-header-inner">
-        <a class="site-brand" href="/">AWS Builder Center <span>Badge Tracker</span></a>
-        <nav class="site-nav" aria-label="Site">
-          <a href="/guide/">Guide</a>
-          <a href="/badges/" aria-current="page">Badges</a>
-          <a href="/faq/">FAQ</a>
-          <a class="open-app" href="/">Open the tracker</a>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Primary navigation">
+        <div class="brand-lockup">
+          <span class="brand-mark" aria-hidden="true"><i class="fa-brands fa-aws"></i></span
+          ><span>AWS Builder Center<br /><strong>Badge Tracker</strong></span>
+        </div>
+        <nav class="nav-list" aria-label="Sections">
+          <a class="nav-link" href="/#dashboard">
+            <i class="nav-icon fa-solid fa-chart-pie" aria-hidden="true"></i>
+            Dashboard
+          </a>
+          <a class="nav-link" href="/#daily">
+            <i class="nav-icon fa-solid fa-list-check" aria-hidden="true"></i>
+            Daily tracker
+          </a>
+          <a class="nav-link" href="/#calendar">
+            <i class="nav-icon fa-regular fa-calendar-days" aria-hidden="true"></i>
+            Calendar
+          </a>
+          <a class="nav-link" href="/#badges">
+            <i class="nav-icon fa-solid fa-medal" aria-hidden="true"></i>
+            Badges
+          </a>
+          <a class="nav-link" href="/#weekly">
+            <i class="nav-icon fa-solid fa-calendar-week" aria-hidden="true"></i>
+            Weekly goals
+          </a>
+          <a class="nav-link" href="/#profile">
+            <i class="nav-icon fa-solid fa-user-gear" aria-hidden="true"></i>
+            Profile &amp; settings
+          </a>
         </nav>
+        <nav class="resource-links" aria-label="Resources">
+          <p class="resource-title">Resources</p>
+          <a href="/guide/"><i class="fa-solid fa-book-open" aria-hidden="true"></i> How to use</a>
+          <a href="/badges/" aria-current="page"><i class="fa-solid fa-award" aria-hidden="true"></i> All 21 badges</a>
+          <a href="/faq/"><i class="fa-regular fa-circle-question" aria-hidden="true"></i> FAQ</a>
+        </nav>
+        <div class="sidebar-footer">
+          Learn <i class="fa-solid fa-arrow-right" aria-hidden="true"></i> Build
+          <i class="fa-solid fa-arrow-right" aria-hidden="true"></i> Share
+          <i class="fa-solid fa-arrow-right" aria-hidden="true"></i> Repeat
+        </div>
+        <a
+          class="creator-credit"
+          href="https://builder.aws.com/community/@sugamghale"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Created by Sugam Ghale — open AWS Builder Center profile"
+        >
+          <img class="creator-avatar" src="/favicon-192.png" alt="Sugam Ghale" draggable="false" />
+          <span><small>Created by</small><strong>Sugam Ghale</strong></span>
+        </a>
+      </aside>
+      <div class="mobile-header">
+        <div class="brand-lockup">
+          <span class="brand-mark" aria-hidden="true"><i class="fa-brands fa-aws"></i></span
+          ><span class="mobile-brand-copy"><strong>Badge Tracker</strong><small>Created by Sugam Ghale</small></span>
+        </div>
       </div>
-    </header>
-    <main id="content">
-      <p class="eyebrow">Badges</p>
-      <h1>All 21 AWS Builder Center badges explained</h1>
+      <main id="main-content" class="main-content" tabindex="-1">
+        <div class="content-page">
+          <header class="page-header">
+            <div>
+              <p class="eyebrow">Badges</p>
+              <h1>All 21 AWS Builder Center badges explained</h1>
+            </div>
+          </header>
 
-      <p class="lead">
-        The tracker follows 21 AWS Builder Center badges: 11 quick wins and 10 consistency badges. Here is
-        what each one asks for, as listed in the tracker.
-      </p>
-      <a class="cta" href="/">Track these badges</a>
+          <p class="lead">
+            The tracker follows 21 AWS Builder Center badges: 11 quick wins and 10 consistency badges. Here is
+            what each one asks for, as listed in the tracker.
+          </p>
+          <a class="button button-primary" href="/#badges">Track these badges</a>
 
-      <h2>Quick Wins (11 badges)</h2>
-      <p>Profile basics, first contributions, and the 7-day streaks.</p>
-      <ul class="badge-grid">
-        <li><strong>Hello, World!</strong><span>Complete your About section.</span></li>
-        <li><strong>Photo Finisher</strong><span>Upload a profile photo.</span></li>
-        <li><strong>Discussion Debut</strong><span>Leave 1 comment.</span></li>
-        <li><strong>Knowledge Seeker</strong><span>Read 10 articles.</span></li>
-        <li><strong>First Wish</strong><span>Create your first Wish.</span></li>
-        <li><strong>First Article</strong><span>Publish your first article.</span></li>
-        <li><strong>Idea Influencer</strong><span>Get 10 votes on your Wishes.</span></li>
-        <li><strong>Conversation Starter</strong><span>Get replies on 10 of your comments.</span></li>
-        <li><strong>7-Day Visit Streak</strong><span>Visit Builder Center daily for 7 consecutive days.</span></li>
-        <li><strong>7-Day Comment Streak</strong><span>Comment daily for 7 consecutive days.</span></li>
-        <li><strong>7-Day Like Streak</strong><span>Like content daily for 7 consecutive days.</span></li>
-      </ul>
+          <h2>Quick Wins (11 badges)</h2>
+          <p>Profile basics, first contributions, and the 7-day streaks.</p>
+          <ul class="badge-grid">
+            <li><strong>Hello, World!</strong><span>Complete your About section.</span></li>
+            <li><strong>Photo Finisher</strong><span>Upload a profile photo.</span></li>
+            <li><strong>Discussion Debut</strong><span>Leave 1 comment.</span></li>
+            <li><strong>Knowledge Seeker</strong><span>Read 10 articles.</span></li>
+            <li><strong>First Wish</strong><span>Create your first Wish.</span></li>
+            <li><strong>First Article</strong><span>Publish your first article.</span></li>
+            <li><strong>Idea Influencer</strong><span>Get 10 votes on your Wishes.</span></li>
+            <li><strong>Conversation Starter</strong><span>Get replies on 10 of your comments.</span></li>
+            <li><strong>7-Day Visit Streak</strong><span>Visit Builder Center daily for 7 consecutive days.</span></li>
+            <li><strong>7-Day Comment Streak</strong><span>Comment daily for 7 consecutive days.</span></li>
+            <li><strong>7-Day Like Streak</strong><span>Like content daily for 7 consecutive days.</span></li>
+          </ul>
 
-      <h2>Consistency (10 badges)</h2>
-      <p>Weekly streaks, the 30-day and 90-day streaks, and the like-based creator and contributor badges.</p>
-      <ul class="badge-grid">
-        <li><strong>4-Week Wish Vote Streak</strong><span>Vote on a Wish weekly for 4 consecutive weeks.</span></li>
-        <li><strong>4-Week Article Publishing Streak</strong><span>Publish an article weekly for 4 consecutive weeks.</span></li>
-        <li><strong>30-Day Visit Streak</strong><span>Visit Builder Center daily for 30 consecutive days.</span></li>
-        <li><strong>30-Day Comment Streak</strong><span>Comment daily for 30 consecutive days.</span></li>
-        <li><strong>30-Day Like Streak</strong><span>Like content daily for 30 consecutive days.</span></li>
-        <li><strong>90-Day Visit Streak</strong><span>Visit Builder Center daily for 90 consecutive days.</span></li>
-        <li><strong>90-Day Comment Streak</strong><span>Comment daily for 90 consecutive days.</span></li>
-        <li><strong>90-Day Like Streak</strong><span>Like content daily for 90 consecutive days.</span></li>
-        <li><strong>Valued Creator</strong><span>Get at least 10 likes on 5 different articles.</span></li>
-        <li><strong>Meaningful Contributor</strong><span>Get at least 10 likes on 5 different comments.</span></li>
-      </ul>
+          <h2>Consistency (10 badges)</h2>
+          <p>Weekly streaks, the 30-day and 90-day streaks, and the like-based creator and contributor badges.</p>
+          <ul class="badge-grid">
+            <li><strong>4-Week Wish Vote Streak</strong><span>Vote on a Wish weekly for 4 consecutive weeks.</span></li>
+            <li><strong>4-Week Article Publishing Streak</strong><span>Publish an article weekly for 4 consecutive weeks.</span></li>
+            <li><strong>30-Day Visit Streak</strong><span>Visit Builder Center daily for 30 consecutive days.</span></li>
+            <li><strong>30-Day Comment Streak</strong><span>Comment daily for 30 consecutive days.</span></li>
+            <li><strong>30-Day Like Streak</strong><span>Like content daily for 30 consecutive days.</span></li>
+            <li><strong>90-Day Visit Streak</strong><span>Visit Builder Center daily for 90 consecutive days.</span></li>
+            <li><strong>90-Day Comment Streak</strong><span>Comment daily for 90 consecutive days.</span></li>
+            <li><strong>90-Day Like Streak</strong><span>Like content daily for 90 consecutive days.</span></li>
+            <li><strong>Valued Creator</strong><span>Get at least 10 likes on 5 different articles.</span></li>
+            <li><strong>Meaningful Contributor</strong><span>Get at least 10 likes on 5 different comments.</span></li>
+          </ul>
 
-      <div class="note">
-        Badge rewards, requirements, and eligibility can change. This list reflects what the tracker uses, so
-        confirm the latest rules on <a href="https://builder.aws.com/" target="_blank" rel="noopener noreferrer">AWS Builder Center</a>.
-      </div>
+          <div class="note">
+            Badge rewards, requirements, and eligibility can change. This list reflects what the tracker uses, so
+            confirm the latest rules on <a href="https://builder.aws.com/" target="_blank" rel="noopener noreferrer">AWS Builder Center</a>.
+          </div>
 
-      <h2>How the tracker helps</h2>
-      <p>
-        Streak badges need unbroken runs, so the tracker records each day and week, shows your current and longest
-        streaks, and highlights what is due next. Read <a href="/guide/">how to use the tracker</a> for the full
-        routine.
-      </p>
-
-      <nav class="related" aria-label="Related pages">
-        <a href="/guide/">How to use the tracker</a>
-        <a href="/badges/">All 21 badges explained</a>
-        <a href="/faq/">FAQ</a>
-        <a href="/">Open the tracker</a>
+          <h2>How the tracker helps</h2>
+          <p>
+            Streak badges need unbroken runs, so the tracker records each day and week, shows your current and longest
+            streaks, and highlights what is due next. Read <a href="/guide/">how to use the tracker</a> for the full
+            routine.
+          </p>
+          <nav class="related" aria-label="Related pages">
+            <a href="/guide/">How to use the tracker</a>
+            <a href="/badges/">All 21 badges explained</a>
+            <a href="/faq/">FAQ</a>
+            <a href="/">Open the tracker</a>
+          </nav>
+          <div class="page-footnote">
+            <p>
+              Created by <a href="https://builder.aws.com/community/@sugamghale" target="_blank" rel="noopener noreferrer">Sugam Ghale</a>.
+              Read the <a href="https://builder.aws.com/content/3JlTbvpIUHCxUosgsDcWn3OkLaA/aws-builder-center-badge-tracker-step-by-step-guide" target="_blank" rel="noopener noreferrer">step-by-step guide</a>
+              or <a href="https://builder.aws.com/content/3JlS45QfgOxZrGCHFRyoKN2KXZB/how-i-built-a-private-aws-builder-center-badge-tracker-with-vanilla-javascript" target="_blank" rel="noopener noreferrer">how the tracker was built</a>.
+            </p>
+            <p>
+              An independent project, not affiliated with or endorsed by Amazon Web Services. Badge rewards and
+              requirements can change, so check
+              <a href="https://builder.aws.com/" target="_blank" rel="noopener noreferrer">AWS Builder Center</a>
+              for official details.
+            </p>
+          </div>
+        </div>
+      </main>
+      <nav class="bottom-nav" aria-label="Mobile navigation">
+        <a class="nav-link" href="/#dashboard"><i class="fa-solid fa-chart-pie" aria-hidden="true"></i><span>Dashboard</span></a>
+        <a class="nav-link" href="/#daily"><i class="fa-solid fa-list-check" aria-hidden="true"></i><span>Daily</span></a>
+        <a class="nav-link" href="/#calendar"><i class="fa-regular fa-calendar-days" aria-hidden="true"></i><span>Calendar</span></a>
+        <a class="nav-link" href="/#badges"><i class="fa-solid fa-medal" aria-hidden="true"></i><span>Badges</span></a>
+        <a class="nav-link" href="/#profile"><i class="fa-solid fa-gear" aria-hidden="true"></i><span>Settings</span></a>
       </nav>
-    </main>
-    <footer class="site-footer">
-      <p>
-        Created by <a href="https://builder.aws.com/community/@sugamghale" target="_blank" rel="noopener noreferrer">Sugam Ghale</a>.
-        Read the <a href="https://builder.aws.com/content/3JlTbvpIUHCxUosgsDcWn3OkLaA/aws-builder-center-badge-tracker-step-by-step-guide" target="_blank" rel="noopener noreferrer">step-by-step guide</a>
-        or <a href="https://builder.aws.com/content/3JlS45QfgOxZrGCHFRyoKN2KXZB/how-i-built-a-private-aws-builder-center-badge-tracker-with-vanilla-javascript" target="_blank" rel="noopener noreferrer">how the tracker was built</a>.
-      </p>
-      <p>
-        An independent project, not affiliated with or endorsed by Amazon Web Services.
-        Badge rewards and requirements can change, so check
-        <a href="https://builder.aws.com/" target="_blank" rel="noopener noreferrer">AWS Builder Center</a>
-        for official details.
-      </p>
-    </footer>
+    </div>
   </body>
 </html>

@@ -1490,3 +1490,103 @@ hr {
   margin: 0.75rem 0;
   font-weight: 600;
 }
+/* Links to the guide, badges, and FAQ pages. */
+.resource-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  margin: 1.25rem 0.45rem 0;
+}
+.resource-title {
+  margin: 0 0 0.3rem;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #92a3b4;
+}
+.resource-links a {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.45rem 0.55rem;
+  border-radius: 8px;
+  color: #c9d6e2;
+  font-size: 0.85rem;
+  text-decoration: none;
+}
+.resource-links a:hover,
+.resource-links a:focus-visible {
+  background: #273849;
+  color: #fff;
+}
+.resource-links i {
+  width: 1rem;
+  text-align: center;
+  color: #ffb84c;
+}
+.app-footer {
+  margin-top: 2.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+  font-size: 0.85rem;
+}
+.app-footer nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.25rem;
+}
+.app-footer a {
+  color: var(--blue);
+  font-weight: 600;
+}
+/* Smooth page changes. Browsers with cross-document view transitions keep the sidebar in place
+   and fade only the content when moving between the tracker and the guide, badges, and FAQ pages.
+   Other browsers simply navigate as usual. */
+@view-transition {
+  navigation: auto;
+}
+.sidebar {
+  view-transition-name: sidebar;
+}
+.mobile-header {
+  view-transition-name: mobile-header;
+}
+.bottom-nav {
+  view-transition-name: bottom-nav;
+}
+.main-content {
+  view-transition-name: page-content;
+}
+::view-transition-group(page-content) {
+  animation: none;
+}
+::view-transition-old(page-content) {
+  animation: page-out 0.14s ease-in both;
+}
+::view-transition-new(page-content) {
+  animation: page-in 0.28s ease-out 0.06s both;
+}
+@keyframes page-out {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation-duration: 0.01s;
+    animation-delay: 0s;
+  }
+}
+.resource-links a[aria-current="page"] {
+  background: #273849;
+  color: #fff;
+}

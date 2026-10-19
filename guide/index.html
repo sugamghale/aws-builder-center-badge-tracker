@@ -21,119 +21,190 @@
     <meta name="twitter:title" content="How to Use the AWS Builder Center Badge Tracker" />
     <meta name="twitter:description" content="Step-by-step guide to the free AWS Builder Center Badge Tracker: set up, log daily activity, follow streaks and weekly goals, and back up your progress." />
     <meta name="twitter:image" content="https://awsbuilder.sugamghale.com.np/og-image.png" />
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Badge Tracker","item":"https://awsbuilder.sugamghale.com.np/"},{"@type":"ListItem","position":2,"name":"How to use the AWS Builder Center Badge Tracker","item":"https://awsbuilder.sugamghale.com.np/guide/"}]}</script>
+    <script type="speculationrules">
+      {
+        "prerender": [{ "urls": ["/guide/", "/badges/", "/faq/"], "eagerness": "moderate" }],
+        "prefetch": [{ "urls": ["/"], "eagerness": "moderate" }]
+      }
+    </script>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" referrerpolicy="no-referrer" />
     <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
     <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="stylesheet" href="/style.css" />
     <link rel="stylesheet" href="/pages.css" />
-    <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Badge Tracker","item":"https://awsbuilder.sugamghale.com.np/"},{"@type":"ListItem","position":2,"name":"How to use the AWS Builder Center Badge Tracker","item":"https://awsbuilder.sugamghale.com.np/guide/"}]}</script>
   </head>
   <body>
-    <a class="skip-link" href="#content">Skip to content</a>
-    <header class="site-header">
-      <div class="site-header-inner">
-        <a class="site-brand" href="/">AWS Builder Center <span>Badge Tracker</span></a>
-        <nav class="site-nav" aria-label="Site">
-          <a href="/guide/" aria-current="page">Guide</a>
-          <a href="/badges/">Badges</a>
-          <a href="/faq/">FAQ</a>
-          <a class="open-app" href="/">Open the tracker</a>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Primary navigation">
+        <div class="brand-lockup">
+          <span class="brand-mark" aria-hidden="true"><i class="fa-brands fa-aws"></i></span
+          ><span>AWS Builder Center<br /><strong>Badge Tracker</strong></span>
+        </div>
+        <nav class="nav-list" aria-label="Sections">
+          <a class="nav-link" href="/#dashboard">
+            <i class="nav-icon fa-solid fa-chart-pie" aria-hidden="true"></i>
+            Dashboard
+          </a>
+          <a class="nav-link" href="/#daily">
+            <i class="nav-icon fa-solid fa-list-check" aria-hidden="true"></i>
+            Daily tracker
+          </a>
+          <a class="nav-link" href="/#calendar">
+            <i class="nav-icon fa-regular fa-calendar-days" aria-hidden="true"></i>
+            Calendar
+          </a>
+          <a class="nav-link" href="/#badges">
+            <i class="nav-icon fa-solid fa-medal" aria-hidden="true"></i>
+            Badges
+          </a>
+          <a class="nav-link" href="/#weekly">
+            <i class="nav-icon fa-solid fa-calendar-week" aria-hidden="true"></i>
+            Weekly goals
+          </a>
+          <a class="nav-link" href="/#profile">
+            <i class="nav-icon fa-solid fa-user-gear" aria-hidden="true"></i>
+            Profile &amp; settings
+          </a>
         </nav>
+        <nav class="resource-links" aria-label="Resources">
+          <p class="resource-title">Resources</p>
+          <a href="/guide/" aria-current="page"><i class="fa-solid fa-book-open" aria-hidden="true"></i> How to use</a>
+          <a href="/badges/"><i class="fa-solid fa-award" aria-hidden="true"></i> All 21 badges</a>
+          <a href="/faq/"><i class="fa-regular fa-circle-question" aria-hidden="true"></i> FAQ</a>
+        </nav>
+        <div class="sidebar-footer">
+          Learn <i class="fa-solid fa-arrow-right" aria-hidden="true"></i> Build
+          <i class="fa-solid fa-arrow-right" aria-hidden="true"></i> Share
+          <i class="fa-solid fa-arrow-right" aria-hidden="true"></i> Repeat
+        </div>
+        <a
+          class="creator-credit"
+          href="https://builder.aws.com/community/@sugamghale"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Created by Sugam Ghale — open AWS Builder Center profile"
+        >
+          <img class="creator-avatar" src="/favicon-192.png" alt="Sugam Ghale" draggable="false" />
+          <span><small>Created by</small><strong>Sugam Ghale</strong></span>
+        </a>
+      </aside>
+      <div class="mobile-header">
+        <div class="brand-lockup">
+          <span class="brand-mark" aria-hidden="true"><i class="fa-brands fa-aws"></i></span
+          ><span class="mobile-brand-copy"><strong>Badge Tracker</strong><small>Created by Sugam Ghale</small></span>
+        </div>
       </div>
-    </header>
-    <main id="content">
-      <p class="eyebrow">Guide</p>
-      <h1>How to use the AWS Builder Center Badge Tracker</h1>
+      <main id="main-content" class="main-content" tabindex="-1">
+        <div class="content-page">
+          <header class="page-header">
+            <div>
+              <p class="eyebrow">Guide</p>
+              <h1>How to use the AWS Builder Center Badge Tracker</h1>
+            </div>
+          </header>
 
-      <p class="lead">
-        A quick walkthrough for setting up the free AWS Builder Center Badge Tracker, logging your daily
-        activity, and following your streaks and weekly goals. Everything is saved in your own browser.
-      </p>
-      <a class="cta" href="/">Open the tracker</a>
+          <p class="lead">
+            A quick walkthrough for setting up the free AWS Builder Center Badge Tracker, logging your daily
+            activity, and following your streaks and weekly goals. Everything is saved in your own browser.
+          </p>
+          <a class="button button-primary" href="/">Open the tracker</a>
 
-      <h2>1. Set up your profile</h2>
-      <p>
-        On your first visit, enter your name, AWS Builder ID, and the date you started tracking. Then tick any
-        badges you already earned before using the tracker. Those stay completed. New streak tracking starts
-        from today unless you add earlier activity dates yourself. You can change all of this later in
-        <strong>Profile &amp; settings</strong>.
-      </p>
+          <h2>1. Set up your profile</h2>
+          <p>
+            On your first visit, enter your name, AWS Builder ID, and the date you started tracking. Then tick any
+            badges you already earned before using the tracker. Those stay completed. New streak tracking starts
+            from today unless you add earlier activity dates yourself. You can change all of this later in
+            <strong>Profile &amp; settings</strong>.
+          </p>
 
-      <h2>2. Follow your daily routine</h2>
-      <p>The Dashboard and Daily tracker use five daily activities:</p>
-      <ul>
-        <li>Visit Builder Center</li>
-        <li>Read 1 article</li>
-        <li>Leave 1 meaningful comment</li>
-        <li>Like 2–3 pieces of content</li>
-        <li>Vote on a Wish</li>
-      </ul>
-      <p>
-        Check each one off when you finish it. Missed a day or forgot to log something? Use the Daily tracker or
-        the Calendar to add or correct activity for any earlier date.
-      </p>
+          <h2>2. Follow your daily routine</h2>
+          <p>The Dashboard and Daily tracker use five daily activities:</p>
+          <ul>
+            <li>Visit Builder Center</li>
+            <li>Read 1 article</li>
+            <li>Leave 1 meaningful comment</li>
+            <li>Like 2–3 pieces of content</li>
+            <li>Vote on a Wish</li>
+          </ul>
+          <p>
+            Check each one off when you finish it. Missed a day or forgot to log something? Use the Daily tracker or
+            the Calendar to add or correct activity for any earlier date.
+          </p>
 
-      <h2>3. Understand daily streaks</h2>
-      <p>
-        The visit, comment, and like streaks count consecutive calendar days. The tracker shows your current and
-        longest streak and how far you are from the 7-day, 30-day, and 90-day badges. A skipped day resets the
-        current streak, but your longest streak is kept.
-      </p>
+          <h2>3. Understand daily streaks</h2>
+          <p>
+            The visit, comment, and like streaks count consecutive calendar days. The tracker shows your current and
+            longest streak and how far you are from the 7-day, 30-day, and 90-day badges. A skipped day resets the
+            current streak, but your longest streak is kept.
+          </p>
 
-      <h2>4. Track weekly goals</h2>
-      <p>
-        The 4-Week Wish Vote Streak and the 4-Week Article Publishing Streak count weeks from Monday to Sunday.
-        One Wish vote, or one published article, in a week is enough for that week. The Weekly goals page shows
-        what is due, a recommended window, and your last four weeks. Once you earn one of these badges, its goal
-        disappears from the Dashboard.
-      </p>
-      <p>
-        To log an article, add its title and its real published date. This only counts towards the weekly
-        streak. It does not change your First Article badge or article-like records.
-      </p>
+          <h2>4. Track weekly goals</h2>
+          <p>
+            The 4-Week Wish Vote Streak and the 4-Week Article Publishing Streak count weeks from Monday to Sunday.
+            One Wish vote, or one published article, in a week is enough for that week. The Weekly goals page shows
+            what is due, a recommended window, and your last four weeks. Once you earn one of these badges, its goal
+            disappears from the Dashboard.
+          </p>
+          <p>
+            To log an article, add its title and its real published date. This only counts towards the weekly
+            streak. It does not change your First Article badge or article-like records.
+          </p>
 
-      <h2>5. Check your badges</h2>
-      <p>
-        The Badges page lists all 21 badges with progress, search, and filters for Quick Wins, Consistency, and
-        7-day or 30-day streaks. For likes-based badges such as Valued Creator, add your articles or comments with
-        their like counts. See <a href="/badges/">every badge and its requirement</a>.
-      </p>
+          <h2>5. Check your badges</h2>
+          <p>
+            The Badges page lists all 21 badges with progress, search, and filters for Quick Wins, Consistency, and
+            7-day or 30-day streaks. For likes-based badges such as Valued Creator, add your articles or comments with
+            their like counts. See <a href="/badges/">every badge and its requirement</a>.
+          </p>
 
-      <h2>6. Back up your progress</h2>
-      <p>
-        Because data lives in your browser, clearing site data or switching browsers removes it. Open
-        <strong>Profile &amp; settings</strong> and use <strong>Download backup</strong> regularly. To move to a
-        new browser or device, choose <strong>Import backup</strong> there.
-      </p>
+          <h2>6. Back up your progress</h2>
+          <p>
+            Because data lives in your browser, clearing site data or switching browsers removes it. Open
+            <strong>Profile &amp; settings</strong> and use <strong>Download backup</strong> regularly. To move to a
+            new browser or device, choose <strong>Import backup</strong> there.
+          </p>
 
-      <div class="note">
-        <strong>Privacy:</strong> no sign-in, no AWS credentials, and no data uploads. The tracker never connects
-        to AWS Builder Center, so you decide what to record.
-      </div>
+          <div class="note">
+            <strong>Privacy:</strong> no sign-in, no AWS credentials, and no data uploads. The tracker never connects
+            to AWS Builder Center, so you decide what to record.
+          </div>
 
-      <p>
-        Prefer a longer version with screenshots? Read the
-        <a href="https://builder.aws.com/content/3JlTbvpIUHCxUosgsDcWn3OkLaA/aws-builder-center-badge-tracker-step-by-step-guide" target="_blank" rel="noopener noreferrer">step-by-step guide on AWS Builder Center</a>.
-      </p>
-
-      <nav class="related" aria-label="Related pages">
-        <a href="/guide/">How to use the tracker</a>
-        <a href="/badges/">All 21 badges explained</a>
-        <a href="/faq/">FAQ</a>
-        <a href="/">Open the tracker</a>
+          <p>
+            Prefer a longer version with screenshots? Read the
+            <a href="https://builder.aws.com/content/3JlTbvpIUHCxUosgsDcWn3OkLaA/aws-builder-center-badge-tracker-step-by-step-guide" target="_blank" rel="noopener noreferrer">step-by-step guide on AWS Builder Center</a>.
+          </p>
+          <nav class="related" aria-label="Related pages">
+            <a href="/guide/">How to use the tracker</a>
+            <a href="/badges/">All 21 badges explained</a>
+            <a href="/faq/">FAQ</a>
+            <a href="/">Open the tracker</a>
+          </nav>
+          <div class="page-footnote">
+            <p>
+              Created by <a href="https://builder.aws.com/community/@sugamghale" target="_blank" rel="noopener noreferrer">Sugam Ghale</a>.
+              Read the <a href="https://builder.aws.com/content/3JlTbvpIUHCxUosgsDcWn3OkLaA/aws-builder-center-badge-tracker-step-by-step-guide" target="_blank" rel="noopener noreferrer">step-by-step guide</a>
+              or <a href="https://builder.aws.com/content/3JlS45QfgOxZrGCHFRyoKN2KXZB/how-i-built-a-private-aws-builder-center-badge-tracker-with-vanilla-javascript" target="_blank" rel="noopener noreferrer">how the tracker was built</a>.
+            </p>
+            <p>
+              An independent project, not affiliated with or endorsed by Amazon Web Services. Badge rewards and
+              requirements can change, so check
+              <a href="https://builder.aws.com/" target="_blank" rel="noopener noreferrer">AWS Builder Center</a>
+              for official details.
+            </p>
+          </div>
+        </div>
+      </main>
+      <nav class="bottom-nav" aria-label="Mobile navigation">
+        <a class="nav-link" href="/#dashboard"><i class="fa-solid fa-chart-pie" aria-hidden="true"></i><span>Dashboard</span></a>
+        <a class="nav-link" href="/#daily"><i class="fa-solid fa-list-check" aria-hidden="true"></i><span>Daily</span></a>
+        <a class="nav-link" href="/#calendar"><i class="fa-regular fa-calendar-days" aria-hidden="true"></i><span>Calendar</span></a>
+        <a class="nav-link" href="/#badges"><i class="fa-solid fa-medal" aria-hidden="true"></i><span>Badges</span></a>
+        <a class="nav-link" href="/#profile"><i class="fa-solid fa-gear" aria-hidden="true"></i><span>Settings</span></a>
       </nav>
-    </main>
-    <footer class="site-footer">
-      <p>
-        Created by <a href="https://builder.aws.com/community/@sugamghale" target="_blank" rel="noopener noreferrer">Sugam Ghale</a>.
-        Read the <a href="https://builder.aws.com/content/3JlTbvpIUHCxUosgsDcWn3OkLaA/aws-builder-center-badge-tracker-step-by-step-guide" target="_blank" rel="noopener noreferrer">step-by-step guide</a>
-        or <a href="https://builder.aws.com/content/3JlS45QfgOxZrGCHFRyoKN2KXZB/how-i-built-a-private-aws-builder-center-badge-tracker-with-vanilla-javascript" target="_blank" rel="noopener noreferrer">how the tracker was built</a>.
-      </p>
-      <p>
-        An independent project, not affiliated with or endorsed by Amazon Web Services.
-        Badge rewards and requirements can change, so check
-        <a href="https://builder.aws.com/" target="_blank" rel="noopener noreferrer">AWS Builder Center</a>
-        for official details.
-      </p>
-    </footer>
+    </div>
   </body>
 </html>

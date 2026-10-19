@@ -243,7 +243,11 @@
     settings: { theme: "light" },
   });
   let data = load();
-  let view = "dashboard";
+  // Pages such as the guide link here with #daily, #badges, etc. to open that tab.
+  const VIEW_NAMES = ["dashboard", "daily", "calendar", "badges", "weekly", "profile"];
+  let view = VIEW_NAMES.includes(location.hash.slice(1))
+    ? location.hash.slice(1)
+    : "dashboard";
   let calendarCursor = new Date();
   let selectedDate = todayKey();
   let toastTimer;

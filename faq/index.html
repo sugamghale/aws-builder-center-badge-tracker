@@ -21,99 +21,170 @@
     <meta name="twitter:title" content="AWS Builder Center Badge Tracker FAQ" />
     <meta name="twitter:description" content="Answers about the free AWS Builder Center Badge Tracker: privacy, where data is stored, backups, streak rules, and already-earned badges." />
     <meta name="twitter:image" content="https://awsbuilder.sugamghale.com.np/og-image.png" />
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Badge Tracker","item":"https://awsbuilder.sugamghale.com.np/"},{"@type":"ListItem","position":2,"name":"AWS Builder Center Badge Tracker FAQ","item":"https://awsbuilder.sugamghale.com.np/faq/"}]}</script>
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is the AWS Builder Center Badge Tracker?","acceptedAnswer":{"@type":"Answer","text":"A free, personal tool for tracking your AWS Builder Center badge progress. It records daily activity, follows streaks, tracks weekly Wish vote and article goals, and shows progress on all 21 badges."}},{"@type":"Question","name":"Is it an official AWS tool?","acceptedAnswer":{"@type":"Answer","text":"No. It is an independent project by Sugam Ghale and is not affiliated with or endorsed by Amazon Web Services."}},{"@type":"Question","name":"Is it free, and do I need to sign in?","acceptedAnswer":{"@type":"Answer","text":"It is free and there is no account. You enter a name, a Builder ID label, and a start date, and the tracker is ready."}},{"@type":"Question","name":"Where is my data stored?","acceptedAnswer":{"@type":"Answer","text":"Only in your browser's local storage on the device you use. Nothing is uploaded, and no AWS credentials are requested."}},{"@type":"Question","name":"Does it connect to AWS Builder Center and check my activity?","acceptedAnswer":{"@type":"Answer","text":"No. It is a manual tracker. You record what you did, so the numbers are only as accurate as your entries."}},{"@type":"Question","name":"Can I use it on more than one device?","acceptedAnswer":{"@type":"Answer","text":"Data does not sync between browsers or devices. Download a backup in Profile & settings and import it on the other one."}},{"@type":"Question","name":"What happens if I clear my browser data?","acceptedAnswer":{"@type":"Answer","text":"Your tracker data is removed with it. Download a backup regularly so you can restore your progress."}},{"@type":"Question","name":"I already earned some badges. How do I add them?","acceptedAnswer":{"@type":"Answer","text":"Select them during first-time setup, or later in Profile & settings. Already-earned badges stay completed, and streak tracking for new activity starts from your tracking start date unless you add earlier dates."}},{"@type":"Question","name":"How are daily and weekly streaks counted?","acceptedAnswer":{"@type":"Answer","text":"Daily streaks count consecutive calendar days. Weekly streaks count Monday to Sunday weeks, and one Wish vote or one published article in a week counts for that week."}},{"@type":"Question","name":"How do I correct a missed or wrong entry?","acceptedAnswer":{"@type":"Answer","text":"Open the Daily tracker or the Calendar and change the activity for that date."}},{"@type":"Question","name":"How many badges does it track?","acceptedAnswer":{"@type":"Answer","text":"21 badges: 11 Quick Wins and 10 Consistency badges. See the full list on the badges page."}}]}</script>
+    <script type="speculationrules">
+      {
+        "prerender": [{ "urls": ["/guide/", "/badges/", "/faq/"], "eagerness": "moderate" }],
+        "prefetch": [{ "urls": ["/"], "eagerness": "moderate" }]
+      }
+    </script>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" referrerpolicy="no-referrer" />
     <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png" />
     <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="stylesheet" href="/style.css" />
     <link rel="stylesheet" href="/pages.css" />
-    <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Badge Tracker","item":"https://awsbuilder.sugamghale.com.np/"},{"@type":"ListItem","position":2,"name":"AWS Builder Center Badge Tracker FAQ","item":"https://awsbuilder.sugamghale.com.np/faq/"}]}</script>
-    <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is the AWS Builder Center Badge Tracker?","acceptedAnswer":{"@type":"Answer","text":"A free, personal tool for tracking your AWS Builder Center badge progress. It records daily activity, follows streaks, tracks weekly Wish vote and article goals, and shows progress on all 21 badges."}},{"@type":"Question","name":"Is it an official AWS tool?","acceptedAnswer":{"@type":"Answer","text":"No. It is an independent project by Sugam Ghale and is not affiliated with or endorsed by Amazon Web Services."}},{"@type":"Question","name":"Is it free, and do I need to sign in?","acceptedAnswer":{"@type":"Answer","text":"It is free and there is no account. You enter a name, a Builder ID label, and a start date, and the tracker is ready."}},{"@type":"Question","name":"Where is my data stored?","acceptedAnswer":{"@type":"Answer","text":"Only in your browser's local storage on the device you use. Nothing is uploaded, and no AWS credentials are requested."}},{"@type":"Question","name":"Does it connect to AWS Builder Center and check my activity?","acceptedAnswer":{"@type":"Answer","text":"No. It is a manual tracker. You record what you did, so the numbers are only as accurate as your entries."}},{"@type":"Question","name":"Can I use it on more than one device?","acceptedAnswer":{"@type":"Answer","text":"Data does not sync between browsers or devices. Download a backup in Profile & settings and import it on the other one."}},{"@type":"Question","name":"What happens if I clear my browser data?","acceptedAnswer":{"@type":"Answer","text":"Your tracker data is removed with it. Download a backup regularly so you can restore your progress."}},{"@type":"Question","name":"I already earned some badges. How do I add them?","acceptedAnswer":{"@type":"Answer","text":"Select them during first-time setup, or later in Profile & settings. Already-earned badges stay completed, and streak tracking for new activity starts from your tracking start date unless you add earlier dates."}},{"@type":"Question","name":"How are daily and weekly streaks counted?","acceptedAnswer":{"@type":"Answer","text":"Daily streaks count consecutive calendar days. Weekly streaks count Monday to Sunday weeks, and one Wish vote or one published article in a week counts for that week."}},{"@type":"Question","name":"How do I correct a missed or wrong entry?","acceptedAnswer":{"@type":"Answer","text":"Open the Daily tracker or the Calendar and change the activity for that date."}},{"@type":"Question","name":"How many badges does it track?","acceptedAnswer":{"@type":"Answer","text":"21 badges: 11 Quick Wins and 10 Consistency badges. See the full list on the badges page."}}]}</script>
   </head>
   <body>
-    <a class="skip-link" href="#content">Skip to content</a>
-    <header class="site-header">
-      <div class="site-header-inner">
-        <a class="site-brand" href="/">AWS Builder Center <span>Badge Tracker</span></a>
-        <nav class="site-nav" aria-label="Site">
-          <a href="/guide/">Guide</a>
-          <a href="/badges/">Badges</a>
-          <a href="/faq/" aria-current="page">FAQ</a>
-          <a class="open-app" href="/">Open the tracker</a>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Primary navigation">
+        <div class="brand-lockup">
+          <span class="brand-mark" aria-hidden="true"><i class="fa-brands fa-aws"></i></span
+          ><span>AWS Builder Center<br /><strong>Badge Tracker</strong></span>
+        </div>
+        <nav class="nav-list" aria-label="Sections">
+          <a class="nav-link" href="/#dashboard">
+            <i class="nav-icon fa-solid fa-chart-pie" aria-hidden="true"></i>
+            Dashboard
+          </a>
+          <a class="nav-link" href="/#daily">
+            <i class="nav-icon fa-solid fa-list-check" aria-hidden="true"></i>
+            Daily tracker
+          </a>
+          <a class="nav-link" href="/#calendar">
+            <i class="nav-icon fa-regular fa-calendar-days" aria-hidden="true"></i>
+            Calendar
+          </a>
+          <a class="nav-link" href="/#badges">
+            <i class="nav-icon fa-solid fa-medal" aria-hidden="true"></i>
+            Badges
+          </a>
+          <a class="nav-link" href="/#weekly">
+            <i class="nav-icon fa-solid fa-calendar-week" aria-hidden="true"></i>
+            Weekly goals
+          </a>
+          <a class="nav-link" href="/#profile">
+            <i class="nav-icon fa-solid fa-user-gear" aria-hidden="true"></i>
+            Profile &amp; settings
+          </a>
         </nav>
+        <nav class="resource-links" aria-label="Resources">
+          <p class="resource-title">Resources</p>
+          <a href="/guide/"><i class="fa-solid fa-book-open" aria-hidden="true"></i> How to use</a>
+          <a href="/badges/"><i class="fa-solid fa-award" aria-hidden="true"></i> All 21 badges</a>
+          <a href="/faq/" aria-current="page"><i class="fa-regular fa-circle-question" aria-hidden="true"></i> FAQ</a>
+        </nav>
+        <div class="sidebar-footer">
+          Learn <i class="fa-solid fa-arrow-right" aria-hidden="true"></i> Build
+          <i class="fa-solid fa-arrow-right" aria-hidden="true"></i> Share
+          <i class="fa-solid fa-arrow-right" aria-hidden="true"></i> Repeat
+        </div>
+        <a
+          class="creator-credit"
+          href="https://builder.aws.com/community/@sugamghale"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Created by Sugam Ghale — open AWS Builder Center profile"
+        >
+          <img class="creator-avatar" src="/favicon-192.png" alt="Sugam Ghale" draggable="false" />
+          <span><small>Created by</small><strong>Sugam Ghale</strong></span>
+        </a>
+      </aside>
+      <div class="mobile-header">
+        <div class="brand-lockup">
+          <span class="brand-mark" aria-hidden="true"><i class="fa-brands fa-aws"></i></span
+          ><span class="mobile-brand-copy"><strong>Badge Tracker</strong><small>Created by Sugam Ghale</small></span>
+        </div>
       </div>
-    </header>
-    <main id="content">
-      <p class="eyebrow">FAQ</p>
-      <h1>AWS Builder Center Badge Tracker FAQ</h1>
+      <main id="main-content" class="main-content" tabindex="-1">
+        <div class="content-page">
+          <header class="page-header">
+            <div>
+              <p class="eyebrow">FAQ</p>
+              <h1>AWS Builder Center Badge Tracker FAQ</h1>
+            </div>
+          </header>
 
-      <p class="lead">Quick answers about the free AWS Builder Center Badge Tracker, privacy, and how streaks work.</p>
-      <details>
-        <summary>What is the AWS Builder Center Badge Tracker?</summary>
-        <p>A free, personal tool for tracking your AWS Builder Center badge progress. It records daily activity, follows streaks, tracks weekly Wish vote and article goals, and shows progress on all 21 badges.</p>
-      </details>
-      <details>
-        <summary>Is it an official AWS tool?</summary>
-        <p>No. It is an independent project by Sugam Ghale and is not affiliated with or endorsed by Amazon Web Services.</p>
-      </details>
-      <details>
-        <summary>Is it free, and do I need to sign in?</summary>
-        <p>It is free and there is no account. You enter a name, a Builder ID label, and a start date, and the tracker is ready.</p>
-      </details>
-      <details>
-        <summary>Where is my data stored?</summary>
-        <p>Only in your browser's local storage on the device you use. Nothing is uploaded, and no AWS credentials are requested.</p>
-      </details>
-      <details>
-        <summary>Does it connect to AWS Builder Center and check my activity?</summary>
-        <p>No. It is a manual tracker. You record what you did, so the numbers are only as accurate as your entries.</p>
-      </details>
-      <details>
-        <summary>Can I use it on more than one device?</summary>
-        <p>Data does not sync between browsers or devices. Download a backup in Profile &amp; settings and import it on the other one.</p>
-      </details>
-      <details>
-        <summary>What happens if I clear my browser data?</summary>
-        <p>Your tracker data is removed with it. Download a backup regularly so you can restore your progress.</p>
-      </details>
-      <details>
-        <summary>I already earned some badges. How do I add them?</summary>
-        <p>Select them during first-time setup, or later in Profile &amp; settings. Already-earned badges stay completed, and streak tracking for new activity starts from your tracking start date unless you add earlier dates.</p>
-      </details>
-      <details>
-        <summary>How are daily and weekly streaks counted?</summary>
-        <p>Daily streaks count consecutive calendar days. Weekly streaks count Monday to Sunday weeks, and one Wish vote or one published article in a week counts for that week.</p>
-      </details>
-      <details>
-        <summary>How do I correct a missed or wrong entry?</summary>
-        <p>Open the Daily tracker or the Calendar and change the activity for that date.</p>
-      </details>
-      <details>
-        <summary>How many badges does it track?</summary>
-        <p>21 badges: 11 Quick Wins and 10 Consistency badges. See the full list on the badges page.</p>
-      </details>
-      <p>
-        Still stuck? Read the <a href="/guide/">usage guide</a> or the
-        <a href="https://builder.aws.com/content/3JlTbvpIUHCxUosgsDcWn3OkLaA/aws-builder-center-badge-tracker-step-by-step-guide" target="_blank" rel="noopener noreferrer">step-by-step article</a>.
-      </p>
-
-      <nav class="related" aria-label="Related pages">
-        <a href="/guide/">How to use the tracker</a>
-        <a href="/badges/">All 21 badges explained</a>
-        <a href="/faq/">FAQ</a>
-        <a href="/">Open the tracker</a>
+          <p class="lead">Quick answers about the free AWS Builder Center Badge Tracker, privacy, and how streaks work.</p>
+          <details>
+            <summary>What is the AWS Builder Center Badge Tracker?</summary>
+            <p>A free, personal tool for tracking your AWS Builder Center badge progress. It records daily activity, follows streaks, tracks weekly Wish vote and article goals, and shows progress on all 21 badges.</p>
+          </details>
+          <details>
+            <summary>Is it an official AWS tool?</summary>
+            <p>No. It is an independent project by Sugam Ghale and is not affiliated with or endorsed by Amazon Web Services.</p>
+          </details>
+          <details>
+            <summary>Is it free, and do I need to sign in?</summary>
+            <p>It is free and there is no account. You enter a name, a Builder ID label, and a start date, and the tracker is ready.</p>
+          </details>
+          <details>
+            <summary>Where is my data stored?</summary>
+            <p>Only in your browser's local storage on the device you use. Nothing is uploaded, and no AWS credentials are requested.</p>
+          </details>
+          <details>
+            <summary>Does it connect to AWS Builder Center and check my activity?</summary>
+            <p>No. It is a manual tracker. You record what you did, so the numbers are only as accurate as your entries.</p>
+          </details>
+          <details>
+            <summary>Can I use it on more than one device?</summary>
+            <p>Data does not sync between browsers or devices. Download a backup in Profile &amp; settings and import it on the other one.</p>
+          </details>
+          <details>
+            <summary>What happens if I clear my browser data?</summary>
+            <p>Your tracker data is removed with it. Download a backup regularly so you can restore your progress.</p>
+          </details>
+          <details>
+            <summary>I already earned some badges. How do I add them?</summary>
+            <p>Select them during first-time setup, or later in Profile &amp; settings. Already-earned badges stay completed, and streak tracking for new activity starts from your tracking start date unless you add earlier dates.</p>
+          </details>
+          <details>
+            <summary>How are daily and weekly streaks counted?</summary>
+            <p>Daily streaks count consecutive calendar days. Weekly streaks count Monday to Sunday weeks, and one Wish vote or one published article in a week counts for that week.</p>
+          </details>
+          <details>
+            <summary>How do I correct a missed or wrong entry?</summary>
+            <p>Open the Daily tracker or the Calendar and change the activity for that date.</p>
+          </details>
+          <details>
+            <summary>How many badges does it track?</summary>
+            <p>21 badges: 11 Quick Wins and 10 Consistency badges. See the full list on the badges page.</p>
+          </details>
+          <p>
+            Still stuck? Read the <a href="/guide/">usage guide</a> or the
+            <a href="https://builder.aws.com/content/3JlTbvpIUHCxUosgsDcWn3OkLaA/aws-builder-center-badge-tracker-step-by-step-guide" target="_blank" rel="noopener noreferrer">step-by-step article</a>.
+          </p>
+          <nav class="related" aria-label="Related pages">
+            <a href="/guide/">How to use the tracker</a>
+            <a href="/badges/">All 21 badges explained</a>
+            <a href="/faq/">FAQ</a>
+            <a href="/">Open the tracker</a>
+          </nav>
+          <div class="page-footnote">
+            <p>
+              Created by <a href="https://builder.aws.com/community/@sugamghale" target="_blank" rel="noopener noreferrer">Sugam Ghale</a>.
+              Read the <a href="https://builder.aws.com/content/3JlTbvpIUHCxUosgsDcWn3OkLaA/aws-builder-center-badge-tracker-step-by-step-guide" target="_blank" rel="noopener noreferrer">step-by-step guide</a>
+              or <a href="https://builder.aws.com/content/3JlS45QfgOxZrGCHFRyoKN2KXZB/how-i-built-a-private-aws-builder-center-badge-tracker-with-vanilla-javascript" target="_blank" rel="noopener noreferrer">how the tracker was built</a>.
+            </p>
+            <p>
+              An independent project, not affiliated with or endorsed by Amazon Web Services. Badge rewards and
+              requirements can change, so check
+              <a href="https://builder.aws.com/" target="_blank" rel="noopener noreferrer">AWS Builder Center</a>
+              for official details.
+            </p>
+          </div>
+        </div>
+      </main>
+      <nav class="bottom-nav" aria-label="Mobile navigation">
+        <a class="nav-link" href="/#dashboard"><i class="fa-solid fa-chart-pie" aria-hidden="true"></i><span>Dashboard</span></a>
+        <a class="nav-link" href="/#daily"><i class="fa-solid fa-list-check" aria-hidden="true"></i><span>Daily</span></a>
+        <a class="nav-link" href="/#calendar"><i class="fa-regular fa-calendar-days" aria-hidden="true"></i><span>Calendar</span></a>
+        <a class="nav-link" href="/#badges"><i class="fa-solid fa-medal" aria-hidden="true"></i><span>Badges</span></a>
+        <a class="nav-link" href="/#profile"><i class="fa-solid fa-gear" aria-hidden="true"></i><span>Settings</span></a>
       </nav>
-    </main>
-    <footer class="site-footer">
-      <p>
-        Created by <a href="https://builder.aws.com/community/@sugamghale" target="_blank" rel="noopener noreferrer">Sugam Ghale</a>.
-        Read the <a href="https://builder.aws.com/content/3JlTbvpIUHCxUosgsDcWn3OkLaA/aws-builder-center-badge-tracker-step-by-step-guide" target="_blank" rel="noopener noreferrer">step-by-step guide</a>
-        or <a href="https://builder.aws.com/content/3JlS45QfgOxZrGCHFRyoKN2KXZB/how-i-built-a-private-aws-builder-center-badge-tracker-with-vanilla-javascript" target="_blank" rel="noopener noreferrer">how the tracker was built</a>.
-      </p>
-      <p>
-        An independent project, not affiliated with or endorsed by Amazon Web Services.
-        Badge rewards and requirements can change, so check
-        <a href="https://builder.aws.com/" target="_blank" rel="noopener noreferrer">AWS Builder Center</a>
-        for official details.
-      </p>
-    </footer>
+    </div>
   </body>
 </html>

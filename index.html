@@ -71,6 +71,16 @@
       }
     </script>
 
+    <script type="speculationrules">
+      {
+        "prerender": [
+          {
+            "urls": ["/guide/", "/badges/", "/faq/"],
+            "eagerness": "moderate"
+          }
+        ]
+      }
+    </script>
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
     <link
       rel="stylesheet"
@@ -262,6 +272,12 @@
             Profile & settings
           </button>
         </nav>
+        <nav class="resource-links" aria-label="Resources">
+          <p class="resource-title">Resources</p>
+          <a href="/guide/"><i class="fa-solid fa-book-open" aria-hidden="true"></i> How to use</a>
+          <a href="/badges/"><i class="fa-solid fa-award" aria-hidden="true"></i> All 21 badges</a>
+          <a href="/faq/"><i class="fa-regular fa-circle-question" aria-hidden="true"></i> FAQ</a>
+        </nav>
         <div class="sidebar-footer">
           Learn <i class="fa-solid fa-arrow-right" aria-hidden="true"></i> Build
           <i class="fa-solid fa-arrow-right" aria-hidden="true"></i> Share
@@ -321,6 +337,13 @@
         <div id="view-badges" class="view" data-view-panel="badges"></div>
         <div id="view-weekly" class="view" data-view-panel="weekly"></div>
         <div id="view-profile" class="view" data-view-panel="profile"></div>
+        <footer class="app-footer">
+          <nav aria-label="Learn more">
+            <a href="/guide/">How to use the tracker</a>
+            <a href="/badges/">All 21 badges explained</a>
+            <a href="/faq/">FAQ</a>
+          </nav>
+        </footer>
       </main>
       <nav id="bottom-nav" class="bottom-nav" aria-label="Mobile navigation">
         <button class="nav-link active" data-view="dashboard">
