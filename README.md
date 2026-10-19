@@ -70,11 +70,20 @@ Interested in the development side? This article explains how I built the tracke
 **Read the article:**
 https://builder.aws.com/content/3JlS45QfgOxZrGCHFRyoKN2KXZB/how-i-built-a-private-aws-builder-center-badge-tracker-with-vanilla-javascript
 
+## More on the site
+
+* [How to use the tracker](https://awsbuilder.sugamghale.com.np/guide/)
+* [All 21 badges explained](https://awsbuilder.sugamghale.com.np/badges/)
+* [FAQ](https://awsbuilder.sugamghale.com.np/faq/)
+
 ## Project files
 
-* `index.html` — page structure
-* `style.css` — visual design and responsive layout
+* `index.html` — the tracker page
+* `style.css` — tracker design and responsive layout
 * `app.js` — tracker behavior and saved progress
+* `guide/`, `badges/`, `faq/` — static content pages
+* `pages.css` — styles for the static content pages
+* `robots.txt`, `sitemap.xml`, `og-image.png`, favicons — search and sharing assets
 
 ---
 
