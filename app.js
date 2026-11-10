@@ -228,6 +228,15 @@
     opts = { month: "long", day: "numeric", year: "numeric" },
   ) =>
     key ? new Intl.DateTimeFormat(undefined, opts).format(parseDate(key)) : "—";
+  // Nothing can be recorded for a day that has not happened yet. Browsers enforce a date
+  // input's max only in the picker and on form submit, so typed or pasted dates are also
+  // checked in code.
+  const isFutureDate = (key) => Boolean(key) && key > todayKey();
+  const pastOrEmpty = (key) => (key && !isFutureDate(key) ? key : "");
+  const FUTURE_MESSAGE = "Future dates can’t be recorded.";
+  function limitDateInputs(root = document) {
+    $$('input[type="date"]', root).forEach((input) => (input.max = todayKey()));
+  }
   const defaultData = () => ({
     schemaVersion: 3,
     profile: null,
@@ -638,7 +647,7 @@
             .map((badge) => {
               const record = data.badges[badge.id],
                 earned = Boolean(record?.earned);
-              return `<label class="badge-picker-option"><input type="checkbox" name="${fieldName}" value="${badge.id}" ${earned ? "checked" : ""} ${fieldName === "setup-earned-badge" ? "data-onboarding-earned" : ""} ${fieldName === "settings-earned-badge" ? "data-settings-earned" : ""}><span><strong>${badge.name}</strong><small>${badge.description}</small></span>${includeDates ? `<input class="completion-date" name="${fieldName}-date" data-badge-id="${badge.id}" ${fieldName === "settings-earned-badge" ? "data-settings-earned-date" : ""} type="date" value="${record?.date || ""}" ${earned ? "" : "disabled"} aria-label="${badge.name} completion date">` : ""}</label>`;
+              return `<label class="badge-picker-option"><input type="checkbox" name="${fieldName}" value="${badge.id}" ${earned ? "checked" : ""} ${fieldName === "setup-earned-badge" ? "data-onboarding-earned" : ""} ${fieldName === "settings-earned-badge" ? "data-settings-earned" : ""}><span><strong>${badge.name}</strong><small>${badge.description}</small></span>${includeDates ? `<input class="completion-date" name="${fieldName}-date" data-badge-id="${badge.id}" ${fieldName === "settings-earned-badge" ? "data-settings-earned-date" : ""} type="date" max="${todayKey()}" value="${record?.date || ""}" ${earned ? "" : "disabled"} aria-label="${badge.name} completion date">` : ""}</label>`;
             })
             .join("")}</fieldset>`,
       )
@@ -738,7 +747,7 @@
   function renderDaily() {
     const s = ["visit", "comment", "like"];
     $("#view-daily").innerHTML =
-      `<section class="daily-layout"><article class="card"><p class="eyebrow">Daily activity tracker</p><h2>Record a day</h2><label class="date-picker">Date<input id="daily-date" type="date" value="${selectedDate}" max=""></label><div id="daily-checklist">${activityChecklist(selectedDate)}</div></article><div class="grid"><article class="card"><p class="eyebrow">Streak calculation</p><h2>Daily consistency</h2><div class="streak-table">${s
+      `<section class="daily-layout"><article class="card"><p class="eyebrow">Daily activity tracker</p><h2>Record a day</h2><label class="date-picker">Date<input id="daily-date" type="date" value="${selectedDate}" max="${todayKey()}"></label><div id="daily-checklist">${activityChecklist(selectedDate)}</div></article><div class="grid"><article class="card"><p class="eyebrow">Streak calculation</p><h2>Daily consistency</h2><div class="streak-table">${s
         .map((k) => {
           const x = streakInfo(k);
           return `<div class="streak-line"><strong>${k[0].toUpperCase() + k.slice(1)}</strong><span>Current ${x.current} · Longest ${x.longest}</span><span class="pill ${x.current ? "progressing" : "start"}">${x.current} days</span></div>`;
@@ -777,10 +786,11 @@
           : count
             ? `<span class="dots"><i class="fa-solid fa-circle" aria-hidden="true"></i> ${count}</span>`
             : "";
-      cells += `<button class="${classes}" data-calendar-date="${k}" aria-label="${formatDate(k)}: ${count} activities" aria-pressed="${isSelected}"><span class="date-num">${day}</span>${marker}</button>`;
+      const isFuture = k > todayKey() && !count;
+      cells += `<button class="${classes}" data-calendar-date="${k}" aria-label="${formatDate(k)}: ${isFuture ? "future date, not available" : `${count} activities`}" aria-pressed="${isSelected}" ${isFuture ? "disabled" : ""}><span class="date-num">${day}</span>${marker}</button>`;
     }
     $("#view-calendar").innerHTML =
-      `<section class="grid grid-2"><article class="card calendar-card"><div class="calendar-controls"><button class="icon-button" data-cal-shift="-1" aria-label="Previous month"><i class="fa-solid fa-chevron-left" aria-hidden="true"></i></button><h2>${new Intl.DateTimeFormat(undefined, { month: "long", year: "numeric" }).format(first)}</h2><button class="icon-button" data-cal-shift="1" aria-label="Next month"><i class="fa-solid fa-chevron-right" aria-hidden="true"></i></button></div><div class="calendar-weekdays">${["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((x) => `<div>${x}</div>`).join("")}</div><div class="calendar-grid" style="--calendar-weeks:${weekCount}">${cells}</div><footer class="calendar-footer"><div class="calendar-key"><span><i class="fa-solid fa-circle" aria-hidden="true"></i> Some activity</span><span><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Full routine</span></div><p class="subtle">Select any past or future date to edit its activities.</p></footer></article><article class="card"><p class="eyebrow">Selected date</p><h2>${formatDate(selectedDate)}</h2>${activityChecklist(selectedDate)}</article></section>`;
+      `<section class="grid grid-2"><article class="card calendar-card"><div class="calendar-controls"><button class="icon-button" data-cal-shift="-1" aria-label="Previous month"><i class="fa-solid fa-chevron-left" aria-hidden="true"></i></button><h2>${new Intl.DateTimeFormat(undefined, { month: "long", year: "numeric" }).format(first)}</h2><button class="icon-button" data-cal-shift="1" aria-label="Next month"><i class="fa-solid fa-chevron-right" aria-hidden="true"></i></button></div><div class="calendar-weekdays">${["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((x) => `<div>${x}</div>`).join("")}</div><div class="calendar-grid" style="--calendar-weeks:${weekCount}">${cells}</div><footer class="calendar-footer"><div class="calendar-key"><span><i class="fa-solid fa-circle" aria-hidden="true"></i> Some activity</span><span><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Full routine</span></div><p class="subtle">Select any past date to add or correct its activities. Future dates cannot be recorded.</p></footer></article><article class="card"><p class="eyebrow">Selected date</p><h2>${formatDate(selectedDate)}</h2>${activityChecklist(selectedDate)}</article></section>`;
   }
   function renderBadges() {
     const filterOptions = [
@@ -1154,6 +1164,7 @@
     return `<div class="notice"><strong>Safety copy available</strong>The data you had before the last import was kept${label}.<button id="undo-import" class="button button-secondary" style="margin-top:0.6rem">Restore previous data</button></div>`;
   }
   function render() {
+    limitDateInputs();
     if (!isReady()) {
       $("#onboarding").hidden = false;
       $("#app").hidden = true;
@@ -1191,6 +1202,11 @@
     return e.innerHTML;
   }
   function setActivity(date, key, checked) {
+    if (checked && isFutureDate(date)) {
+      showToast(FUTURE_MESSAGE);
+      render();
+      return;
+    }
     const a = getActivity(date);
     a[key] = checked;
     data.activities[date] = a;
@@ -1211,7 +1227,7 @@
     if (b.id === "contributor") control = recordManager("comments", b);
     const earned = data.badges[b.id]?.earned;
     $("#badge-dialog-content").innerHTML =
-      `<div class="modal-heading"><div><p class="eyebrow">${b.tier === "quick" ? "Quick Win" : "Consistency"}</p><h2>${b.name}</h2></div><button class="icon-button" data-close-badge aria-label="Close badge details"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button></div><p>${b.description}</p><div class="card" style="margin:1rem 0"><strong>${earned ? '<i class="fa-solid fa-circle-check" aria-hidden="true"></i> Already earned' : p.complete ? '<i class="fa-solid fa-trophy" aria-hidden="true"></i> Completed' : `${p.value} / ${p.target} progress`}</strong><div class="progress ${p.complete ? "green" : ""}" style="margin-top:.55rem"><span style="width:${(p.value / p.target) * 100}%"></span></div>${p.date ? `<p class="subtle">Completed: ${formatDate(p.date)}</p>` : ""}</div>${control}<hr><label class="activity-row"><input type="checkbox" data-earned-badge="${b.id}" ${earned ? "checked" : ""}><span>Already earned</span><small>Skip manual tracking</small></label>${earned ? `<label>Completion date (optional)<input data-earned-date="${b.id}" type="date" value="${data.badges[b.id].date || ""}"></label>` : ""}<div class="modal-actions"><button class="button button-secondary" data-close-badge>Done <i class="fa-solid fa-check" aria-hidden="true"></i></button></div>`;
+      `<div class="modal-heading"><div><p class="eyebrow">${b.tier === "quick" ? "Quick Win" : "Consistency"}</p><h2>${b.name}</h2></div><button class="icon-button" data-close-badge aria-label="Close badge details"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button></div><p>${b.description}</p><div class="card" style="margin:1rem 0"><strong>${earned ? '<i class="fa-solid fa-circle-check" aria-hidden="true"></i> Already earned' : p.complete ? '<i class="fa-solid fa-trophy" aria-hidden="true"></i> Completed' : `${p.value} / ${p.target} progress`}</strong><div class="progress ${p.complete ? "green" : ""}" style="margin-top:.55rem"><span style="width:${(p.value / p.target) * 100}%"></span></div>${p.date ? `<p class="subtle">Completed: ${formatDate(p.date)}</p>` : ""}</div>${control}<hr><label class="activity-row"><input type="checkbox" data-earned-badge="${b.id}" ${earned ? "checked" : ""}><span>Already earned</span><small>Skip manual tracking</small></label>${earned ? `<label>Completion date (optional)<input data-earned-date="${b.id}" type="date" max="${todayKey()}" value="${data.badges[b.id].date || ""}"></label>` : ""}<div class="modal-actions"><button class="button button-secondary" data-close-badge>Done <i class="fa-solid fa-check" aria-hidden="true"></i></button></div>`;
     const dialog = $("#badge-dialog");
     if (!dialog.open) dialog.showModal();
   }
@@ -1707,6 +1723,10 @@
       return;
     }
     if (t.matches("[data-settings-earned-date]")) {
+      if (isFutureDate(t.value)) {
+        showToast("A completion date can’t be in the future.");
+        t.value = pastOrEmpty(data.badges[t.dataset.badgeId]?.date);
+      }
       const form = $("#settings-form");
       setEarnedBadges(
         selectedBadgeIds(form, "settings-earned-badge"),
@@ -1721,7 +1741,8 @@
       return;
     }
     if (t.id === "daily-date") {
-      selectedDate = t.value || todayKey();
+      if (isFutureDate(t.value)) showToast(FUTURE_MESSAGE);
+      selectedDate = pastOrEmpty(t.value) || todayKey();
       renderDaily();
       return;
     }
@@ -1748,6 +1769,11 @@
       return;
     }
     if (t.matches("[data-earned-date]")) {
+      if (isFutureDate(t.value)) {
+        showToast("A completion date can’t be in the future.");
+        t.value = pastOrEmpty(data.badges[t.dataset.earnedDate].date);
+        return;
+      }
       data.badges[t.dataset.earnedDate].date = t.value || null;
       save();
       render();
@@ -1831,6 +1857,10 @@
   document.addEventListener("change", (e) => {
     if (e.target.id === "badge-filter") filterBadges();
   });
+  // A date input's max is refreshed as it gains focus, so a tab left open past midnight stays correct.
+  document.addEventListener("focusin", (e) => {
+    if (e.target.matches?.('input[type="date"]')) e.target.max = todayKey();
+  });
   $("#weekly-article-form").addEventListener("submit", (e) => {
     e.preventDefault();
     if (e.submitter?.value === "cancel") {
@@ -1842,6 +1872,10 @@
       title = values.get("title").trim(),
       date = values.get("date");
     if (!title || !date) return;
+    if (isFutureDate(date)) {
+      showToast("The published date can’t be in the future.");
+      return;
+    }
     data.weeklyArticles.push({ title, date });
     save();
     $("#weekly-article-dialog").close();
@@ -1854,6 +1888,10 @@
     const form = e.currentTarget,
       f = new FormData(form),
       earned = selectedBadgeIds(form, "setup-earned-badge");
+    if (isFutureDate(f.get("startDate"))) {
+      showToast("The starting date can’t be in the future.");
+      return;
+    }
     data.profile = {
       fullName: f.get("fullName").trim(),
       builderId: f.get("builderId").trim(),
@@ -1877,6 +1915,14 @@
       f = new FormData(form),
       earned = selectedBadgeIds(form, "settings-earned-badge"),
       dates = selectedBadgeDates(form, "settings-earned-badge");
+    if (isFutureDate(f.get("startDate"))) {
+      showToast("The starting date can’t be in the future.");
+      return;
+    }
+    if (Object.values(dates).some(isFutureDate)) {
+      showToast("Completion dates can’t be in the future. Please fix the highlighted date.");
+      return;
+    }
     data.profile = {
       fullName: f.get("fullName").trim(),
       builderId: f.get("builderId").trim(),

@@ -542,6 +542,13 @@ button:focus-visible {
   cursor: pointer;
   position: relative;
 }
+.calendar-day:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+.calendar-day:disabled:hover {
+  border-color: #e1e6eb;
+}
 .calendar-day:hover {
   border-color: var(--orange);
 }
