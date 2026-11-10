@@ -807,13 +807,31 @@
     $("#view-badges").innerHTML =
       `<section class="card"><div class="section-heading"><div><p class="eyebrow">All 21 badges</p><h2>Find your next win</h2></div><span class="score">${allProgress().complete} completed</span></div><div class="badge-controls"><input id="badge-search" type="search" placeholder="Search badges..." aria-label="Search badges"><select id="badge-filter" aria-label="Filter badges">${filterOptions.map(([v, l]) => `<option value="${v}">${l}</option>`).join("")}</select></div><div id="badges-grid" class="badges-grid">${BADGES.map(badgeCard).join("")}</div></section>`;
   }
+  // Once a 4-week badge is earned, the weeks that earned it are shown even if the streak has
+  // lapsed since (otherwise the history would vanish from the page as soon as a week is missed).
+  function earnedRunStart(type) {
+    if (!weeklyBadgeEarned(type)) return null;
+    const weeks = weeklyStreak(type).weeks,
+      set = new Set(weeks);
+    return (
+      weeks.find((w) => [1, 2, 3].every((i) => set.has(addDays(w, 7 * i)))) ||
+      null
+    );
+  }
+  // First of the four weeks to display for a weekly goal.
+  function streakStartWeek(type) {
+    return (
+      earnedRunStart(type) ||
+      weeklyStreak(type).runStart ||
+      weekKey(todayKey())
+    );
+  }
   function renderWeekly() {
     const thisWeek = weekKey(todayKey());
     // Four Monday–Sunday weeks that start where the running streak started (or this week).
     function rows(type) {
-      const info = weeklyStreak(type),
-        entries = weeklyEntries(type),
-        first = info.runStart || thisWeek;
+      const entries = weeklyEntries(type),
+        first = streakStartWeek(type);
       return [0, 1, 2, 3]
         .map((index) => {
           const week = addDays(first, 7 * index),
@@ -870,7 +888,7 @@
         goal = WEEKLY_GOALS[type],
         action =
           earned || plan.status === "done" ? "" : weeklyActionButton(type);
-      return `<article class="card weekly-goal-card"><p class="eyebrow"><i class="fa-solid ${goal.icon}" aria-hidden="true"></i> ${eyebrow}</p><h2>${title}</h2><p class="subtle">${intro}</p><div class="weekly-status ${msg.tone}"><span class="pill ${msg.tone}">${msg.pill}</span><p>${msg.text}</p></div>${type === "articles" && !earned ? '<button class="button button-secondary weekly-card-action" data-weekly-action="articles"><i class="fa-solid fa-plus" aria-hidden="true"></i> Add published article</button>' : action}<div class="weekly-list">${rows(type)}</div><div class="notice"><strong>Current: ${info.current} ${info.current === 1 ? "week" : "weeks"} · Longest: ${info.longest} ${info.longest === 1 ? "week" : "weeks"}${info.current > 4 ? " · Goal reached" : ""}</strong>${rule}</div></article>`;
+      return `<article class="card weekly-goal-card"><p class="eyebrow"><i class="fa-solid ${goal.icon}" aria-hidden="true"></i> ${eyebrow}</p><h2>${title}</h2><p class="subtle">${intro}</p><div class="weekly-status ${msg.tone}"><span class="pill ${msg.tone}">${msg.pill}</span><p>${msg.text}</p></div>${type === "articles" && !earned ? '<button class="button button-secondary weekly-card-action" data-weekly-action="articles"><i class="fa-solid fa-plus" aria-hidden="true"></i> Add published article</button>' : action}${earnedRunStart(type) ? '<p class="subtle weekly-caption">The 4 weeks that earned this badge</p>' : ""}<div class="weekly-list">${rows(type)}</div><div class="notice"><strong>Current: ${info.current} ${info.current === 1 ? "week" : "weeks"} · Longest: ${info.longest} ${info.longest === 1 ? "week" : "weeks"}${info.current > 4 ? " · Goal reached" : ""}</strong>${rule}</div></article>`;
     }
     $("#view-weekly").innerHTML =
       `<section class="grid grid-2">${goalCard("wishVote", "Wish voting", "4-Week Wish Vote Streak", "Record a Wish vote on its actual date in the Daily Tracker, or log today’s vote here.", "One vote in each Monday–Sunday week counts.")}${goalCard("articles", "Article publishing", "4-Week Article Streak", "Add one article at a time using its actual published date.", "One article in each Monday–Sunday week counts.")}</section>`;
@@ -1225,11 +1243,38 @@
     if (b.type === "articles" || b.type === "likesList")
       control = recordManager(b.list || "articles", b);
     if (b.id === "contributor") control = recordManager("comments", b);
+    if (b.type === "weekly" || b.type === "weeklyArticles")
+      control = weeklyBadgeDetails(b);
     const earned = data.badges[b.id]?.earned;
     $("#badge-dialog-content").innerHTML =
       `<div class="modal-heading"><div><p class="eyebrow">${b.tier === "quick" ? "Quick Win" : "Consistency"}</p><h2>${b.name}</h2></div><button class="icon-button" data-close-badge aria-label="Close badge details"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button></div><p>${b.description}</p><div class="card" style="margin:1rem 0"><strong>${earned ? '<i class="fa-solid fa-circle-check" aria-hidden="true"></i> Already earned' : p.complete ? '<i class="fa-solid fa-trophy" aria-hidden="true"></i> Completed' : `${p.value} / ${p.target} progress`}</strong><div class="progress ${p.complete ? "green" : ""}" style="margin-top:.55rem"><span style="width:${(p.value / p.target) * 100}%"></span></div>${p.date ? `<p class="subtle">Completed: ${formatDate(p.date)}</p>` : ""}</div>${control}<hr><label class="activity-row"><input type="checkbox" data-earned-badge="${b.id}" ${earned ? "checked" : ""}><span>Already earned</span><small>Skip manual tracking</small></label>${earned ? `<label>Completion date (optional)<input data-earned-date="${b.id}" type="date" max="${todayKey()}" value="${data.badges[b.id].date || ""}"></label>` : ""}<div class="modal-actions"><button class="button button-secondary" data-close-badge>Done <i class="fa-solid fa-check" aria-hidden="true"></i></button></div>`;
     const dialog = $("#badge-dialog");
     if (!dialog.open) dialog.showModal();
+  }
+  // Lists the four Monday–Sunday weeks behind a weekly badge, with the entries that counted.
+  function weeklyBadgeDetails(badge) {
+    const type = badge.type === "weekly" ? badge.activity : "articles",
+      isArticle = type === "articles",
+      entries = weeklyEntries(type),
+      first = streakStartWeek(type),
+      weeks = [0, 1, 2, 3].map((i) => {
+        const week = addDays(first, 7 * i),
+          inWeek = entries.filter((e) => weekKey(e.date) === week);
+        const items = isArticle
+          ? inWeek.map(
+              (e) =>
+                `<li><strong>${escapeHtml(e.label || "Untitled article")}</strong><small>Published ${fmtDay(e.date)}</small></li>`,
+            )
+          : inWeek.length
+            ? [
+                `<li><strong>${inWeek.length} Wish ${inWeek.length === 1 ? "vote" : "votes"}</strong><small>${inWeek.map((e) => formatDate(e.date, { month: "short", day: "numeric" })).join(", ")}</small></li>`,
+              ]
+            : [];
+        return `<div class="week-detail ${inWeek.length ? "done" : ""}"><div class="week-detail-head"><strong>Week ${i + 1}</strong><small>${formatDate(week, { month: "short", day: "numeric" })} – ${formatDate(addDays(week, 6), { month: "short", day: "numeric" })}</small><span class="pill ${inWeek.length ? "complete" : "start"}">${inWeek.length ? "Counted" : week > weekKey(todayKey()) ? "Upcoming" : "No entry"}</span></div>${items.length ? `<ul>${items.join("")}</ul>` : ""}</div>`;
+      }),
+      anyEntries = weeks.some((w) => w.includes("<ul>"));
+    const complete = badgeProgress(badge).complete;
+    return `<div class="week-details"><h3><i class="fa-solid fa-calendar-week" aria-hidden="true"></i> ${complete ? "Weeks that earned this badge" : "Your weekly streak"}</h3><p class="subtle">${anyEntries ? (isArticle ? "One published article in each Monday–Sunday week counts." : "One Wish vote in each Monday–Sunday week counts.") : `No ${isArticle ? "published articles" : "Wish votes"} are recorded for this streak in the tracker yet.`}</p>${weeks.join("")}${anyEntries ? "" : `<button class="button button-secondary" data-go="weekly">Open Weekly goals</button>`}</div>`;
   }
   function recordManager(list, badge) {
     const entries = data[list] || [],
@@ -1587,6 +1632,7 @@
       return;
     }
     if (target.dataset.go) {
+      if ($("#badge-dialog").open) $("#badge-dialog").close();
       view = target.dataset.go;
       render();
       return;
