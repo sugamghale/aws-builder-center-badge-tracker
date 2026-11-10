@@ -43,12 +43,14 @@ This is a manual progress tool. You decide which activities to record.
 Open **Profile & settings** to:
 
 * Download a backup file
-* Import a previous backup
+* Import a backup file (replaces the data in this browser after you confirm)
 * Edit your profile
 * Manage already-earned badges
 * Clear all tracker data from the current browser
 
-Download a backup before changing browsers or devices.
+Download a backup before changing browsers or devices. On the new browser, choose **Import backup** on the welcome page (or drop the file onto it) to restore your progress.
+
+Importing checks the file first and shows what will change. Before replacing anything, the tracker keeps a safety copy of your current data, and **Profile & settings** has a **Restore previous data** button to undo the import.
 
 ## Important note
 

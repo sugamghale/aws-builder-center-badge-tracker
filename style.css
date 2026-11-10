@@ -43,21 +43,7 @@ body {
 .skip-link:focus {
   top: 1rem;
 }
-.onboarding-shell {
-  min-height: 100vh;
-  display: grid;
-  place-items: center;
-  padding: 1.25rem;
-  background: linear-gradient(135deg, #edf4fa 0%, #f7f8fa 58%, #fff4df 100%);
-}
-.onboarding-card {
-  width: min(100%, 580px);
-  background: var(--surface);
-  padding: clamp(1.5rem, 5vw, 3rem);
-  border-radius: 24px;
-  box-shadow: var(--shadow);
-  border: 1px solid #e8ecf0;
-}
+/* Welcome page: see the "Welcome page" section at the end of this file. */
 .brand-lockup {
   display: flex;
   align-items: center;
@@ -82,7 +68,6 @@ body {
   color: #657381;
   margin: 1.25rem 0 0.35rem;
 }
-.onboarding-card h1,
 .page-header h1 {
   font-size: clamp(1.7rem, 4vw, 2.25rem);
   line-height: 1.15;
@@ -903,9 +888,6 @@ hr {
     max-width: none;
     flex: 1 0 100%;
   }
-  .onboarding-card {
-    padding: 1.5rem;
-  }
   .modal > div,
   .modal > form {
     padding: 1.1rem;
@@ -1379,19 +1361,6 @@ hr {
   .record-row button {
     padding: 0.55rem;
   }
-  .onboarding-shell {
-    display: block;
-    padding: 1rem;
-    min-height: 100dvh;
-  }
-  .onboarding-card {
-    width: 100%;
-    padding: 1.35rem;
-    border-radius: 18px;
-  }
-  .onboarding-card h1 {
-    font-size: 1.7rem;
-  }
   .badge-picker-list {
     max-height: 280px;
   }
@@ -1589,4 +1558,376 @@ hr {
 .resource-links a[aria-current="page"] {
   background: #273849;
   color: #fff;
+}
+/* ===== Welcome page ===== */
+.onboarding-shell {
+  min-height: 100vh;
+  padding: clamp(1rem, 3vw, 2.5rem);
+  background: linear-gradient(135deg, #edf4fa 0%, #f7f8fa 58%, #fff4df 100%);
+}
+.welcome {
+  width: min(1240px, 100%);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: clamp(1rem, 2.5vw, 2rem);
+  align-items: start;
+}
+/* The hero sticks inside this column wrapper, so it stops at the end of the setup form
+   instead of sliding down over the "What is…" section below. */
+.welcome-aside {
+  align-self: stretch;
+  min-width: 0;
+}
+.welcome-hero {
+  position: sticky;
+  top: clamp(1rem, 3vw, 2.5rem);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.5rem, 3vh, 2.25rem);
+  min-height: min(720px, calc(100vh - 5rem));
+  padding: clamp(1.75rem, 3.5vw, 3rem);
+  border-radius: 28px;
+  color: #fff;
+  background: linear-gradient(145deg, #14212e 0%, #203c55 100%);
+  box-shadow: 0 18px 40px #14212e33;
+  overflow: hidden;
+  isolation: isolate;
+}
+.welcome-hero::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: -140px;
+  right: -120px;
+  width: 340px;
+  height: 340px;
+  border-radius: 50%;
+  background: #ff990033;
+  filter: blur(8px);
+}
+.welcome-hero::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  bottom: -160px;
+  left: -100px;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: #2469a044;
+}
+.welcome-hero .brand-lockup {
+  color: #fff;
+  font-weight: 700;
+}
+.welcome-hero .eyebrow {
+  margin: 0 0 0.6rem;
+  color: #ffb84c;
+}
+.welcome-hero h1 {
+  margin: 0;
+  font-size: clamp(2rem, 3.4vw, 2.9rem);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+.welcome-lead {
+  margin: 1rem 0 0;
+  max-width: 34ch;
+  color: #cfdbe6;
+  font-size: 1.05rem;
+  line-height: 1.55;
+}
+.welcome-points {
+  list-style: none;
+  margin: auto 0 0;
+  padding: 0;
+  display: grid;
+  gap: 1.1rem;
+}
+.welcome-points li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.9rem;
+  align-items: start;
+}
+.point-icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
+  background: #ffffff14;
+  border: 1px solid #ffffff1f;
+  color: #ffb84c;
+}
+.welcome-points strong {
+  display: block;
+  line-height: 1.3;
+}
+.welcome-points li span {
+  color: #b7c6d4;
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+.welcome-setup {
+  display: grid;
+  gap: 1.25rem;
+  min-width: 0;
+}
+.import-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 1.1rem;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  border-radius: 20px;
+  background: #fffaf0;
+  border: 1.5px dashed #e5a027;
+  transition:
+    background 0.16s,
+    border-color 0.16s,
+    box-shadow 0.16s;
+}
+.import-card.is-dragover {
+  background: #fff1d6;
+  border-color: var(--orange-dark);
+  box-shadow: 0 0 0 4px #ff990033;
+}
+.import-icon {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 15px;
+  background: #fff;
+  border: 1px solid #f0d9a8;
+  color: var(--orange-dark);
+  font-size: 1.35rem;
+}
+.import-copy h2 {
+  margin: 0 0 0.2rem;
+  font-size: 1.05rem;
+  line-height: 1.3;
+}
+.import-copy p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+.welcome-divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.welcome-divider::before,
+.welcome-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #d3dce4;
+}
+.setup-card {
+  padding: clamp(1.4rem, 3vw, 2.25rem);
+  border-radius: 24px;
+  background: var(--surface);
+  border: 1px solid #e8ecf0;
+  box-shadow: var(--shadow);
+}
+.setup-card > h2 {
+  margin: 0 0 0.2rem;
+  font-size: 1.5rem;
+  line-height: 1.2;
+}
+.setup-form {
+  display: grid;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+.field-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 1rem;
+}
+.field-row label {
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+.setup-form .badge-selection-section {
+  margin-top: 0;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e4e8ec;
+}
+.setup-form .badge-picker-list {
+  max-height: none;
+  overflow: visible;
+  padding: 0;
+  gap: 0.9rem;
+}
+.setup-form .button-primary.full {
+  margin-top: 0;
+  padding: 0.95rem 1.25rem;
+  font-size: 1.02rem;
+  border-radius: 12px;
+}
+.welcome .seo-about {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem clamp(1.5rem, 4vw, 3rem);
+  margin-top: 0.5rem;
+  padding: clamp(1.4rem, 3vw, 2rem);
+  border: 1px solid #e8ecf0;
+  border-radius: 24px;
+  background: #ffffffcc;
+  font-size: 0.92rem;
+}
+.welcome .seo-about h2 {
+  font-size: 1.15rem;
+}
+@media (min-width: 961px) and (max-height: 700px) {
+  /* On short windows a pinned hero would hide its own content, so let it scroll normally. */
+  .welcome-hero {
+    position: relative;
+    top: auto;
+    min-height: 0;
+  }
+}
+@media (max-width: 960px) {
+  .welcome {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .welcome-hero {
+    position: relative; /* keeps the decorative circles clipped inside the card */
+    top: auto;
+    min-height: 0;
+    border-radius: 24px;
+  }
+  .welcome-points {
+    margin-top: 0;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem 1.5rem;
+  }
+  .welcome-lead {
+    max-width: 52ch;
+  }
+}
+@media (max-width: 640px) {
+  .onboarding-shell {
+    padding: 0.75rem;
+  }
+  .welcome-hero {
+    padding: 1.5rem;
+    gap: 1.25rem;
+  }
+  .welcome-points {
+    grid-template-columns: 1fr;
+    gap: 0.9rem;
+  }
+  .import-card {
+    grid-template-columns: auto minmax(0, 1fr);
+    padding: 1.1rem;
+  }
+  .import-card .button {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+  .setup-card {
+    border-radius: 20px;
+  }
+  .setup-form .badge-picker-list {
+    max-height: 340px;
+    overflow: auto;
+    padding: 0.2rem 0.4rem 0.2rem 0.1rem;
+  }
+  .welcome .seo-about {
+    grid-template-columns: minmax(0, 1fr);
+    border-radius: 20px;
+  }
+}
+
+/* ===== Backup import ===== */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+.data-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin: 1rem 0 0.75rem;
+}
+.import-compare {
+  width: 100%;
+  margin: 1rem 0;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+.import-compare th,
+.import-compare td {
+  padding: 0.5rem 0.65rem;
+  text-align: left;
+  border-bottom: 1px solid #e4e8ec;
+  overflow-wrap: anywhere;
+}
+.import-compare thead th {
+  font-size: 0.72rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.import-compare tbody th {
+  width: 36%;
+  font-weight: 600;
+  color: var(--muted);
+}
+.import-compare td:last-child {
+  font-weight: 700;
+}
+.import-error {
+  border-left-color: var(--red);
+  background: #fdf1f0;
+}
+#import-dialog .notice {
+  margin: 0.9rem 0;
+}
+/* Welcome page polish: badge groups and consistent field heights. */
+.setup-form .badge-picker-group {
+  display: grid;
+  align-content: start;
+  gap: 0.55rem;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.setup-form .badge-picker-group legend {
+  float: left;
+  width: 100%;
+  padding: 0;
+  margin-bottom: 0.55rem;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.setup-form .badge-picker-group legend + * {
+  clear: both;
+}
+.field-row input {
+  min-height: 46px;
 }

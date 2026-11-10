@@ -2,6 +2,12 @@
 (() => {
   "use strict";
   const STORAGE_KEY = "awsBuilderBadgeTracker";
+  // Safety copies live beside the main record. They are written only by the import tools
+  // (or when saved data cannot be read) and are never read as the user's live data.
+  const BACKUP_KEY = `${STORAGE_KEY}.preImportBackup`;
+  const UNREADABLE_KEY = `${STORAGE_KEY}.unreadable`;
+  const SCHEMA_VERSION = 3;
+  const MAX_BACKUP_BYTES = 5 * 1024 * 1024;
   const ACTIVITY_META = {
     visit: ["Visited Builder Center", "Visit Builder Center"],
     read: ["Read an article", "Read 1 article"],
@@ -251,9 +257,31 @@
   let calendarCursor = new Date();
   let selectedDate = todayKey();
   let toastTimer;
-  function load() {
+  // Brings an older data shape up to the current schema. Returns true when something changed.
+  // Shared by saved data (load) and imported backups (parseBackup) so both follow the same rules.
+  function migrateData(normalized, fromVersion) {
+    if (fromVersion >= SCHEMA_VERSION) return false;
+    const oldWeeklyBadge = normalized.badges.articleWeek4;
+    if (oldWeeklyBadge?.completed && !oldWeeklyBadge.earned)
+      delete normalized.badges.articleWeek4;
+    normalized.schemaVersion = SCHEMA_VERSION;
+    return true;
+  }
+  // If saved data ever fails to parse, keep a verbatim copy so it can be recovered by hand
+  // before anything new is written over it.
+  function keepUnreadableCopy(raw) {
+    if (!raw) return;
     try {
-      const stored = JSON.parse(localStorage.getItem(STORAGE_KEY));
+      localStorage.setItem(UNREADABLE_KEY, raw);
+    } catch {
+      /* storage full or unavailable: nothing more we can do */
+    }
+  }
+  function load() {
+    let raw = null;
+    try {
+      raw = localStorage.getItem(STORAGE_KEY);
+      const stored = JSON.parse(raw);
       if (!stored) return defaultData();
       const normalized = {
         ...defaultData(),
@@ -265,15 +293,11 @@
         weeklyArticles: stored.weeklyArticles || [],
         badges: stored.badges || {},
       };
-      if ((stored.schemaVersion || 0) < 3) {
-        const oldWeeklyBadge = normalized.badges.articleWeek4;
-        if (oldWeeklyBadge?.completed && !oldWeeklyBadge.earned)
-          delete normalized.badges.articleWeek4;
-        normalized.schemaVersion = 3;
+      if (migrateData(normalized, stored.schemaVersion || 0))
         localStorage.setItem(STORAGE_KEY, JSON.stringify(normalized));
-      }
       return normalized;
     } catch {
+      keepUnreadableCopy(raw);
       return defaultData();
     }
   }
@@ -1118,7 +1142,16 @@
   function renderProfile() {
     const p = data.profile;
     $("#view-profile").innerHTML =
-      `<section class="grid grid-2"><article class="card"><p class="eyebrow">Profile</p><h2>${escapeHtml(p.fullName)}</h2><dl class="profile-summary"><div><dt>Builder ID</dt><dd>${escapeHtml(p.builderId)}</dd></div><div><dt>Starting date</dt><dd>${formatDate(p.startDate)}</dd></div><div><dt>Storage</dt><dd>Only this browser</dd></div></dl><button id="profile-settings" class="button button-primary" style="margin-top:1rem">Edit profile & settings</button></article><article class="card"><p class="eyebrow">Your data</p><h2>Backup your progress</h2><p class="subtle">Your activities, profile, already-earned badges, and progress are private and persist through browser restarts.</p><button id="profile-export" class="button button-secondary" style="margin-top:1rem">Download backup</button></article></section>${creatorProfileSection()}${studentRewards()}`;
+      `<section class="grid grid-2"><article class="card"><p class="eyebrow">Profile</p><h2>${escapeHtml(p.fullName)}</h2><dl class="profile-summary"><div><dt>Builder ID</dt><dd>${escapeHtml(p.builderId)}</dd></div><div><dt>Starting date</dt><dd>${formatDate(p.startDate)}</dd></div><div><dt>Storage</dt><dd>Only this browser</dd></div></dl><button id="profile-settings" class="button button-primary" style="margin-top:1rem">Edit profile & settings</button></article><article class="card"><p class="eyebrow">Your data</p><h2>Backup your progress</h2><p class="subtle">Your activities, profile, already-earned badges, and progress are private and persist through browser restarts. Download a backup to move to another browser or device, then import it there.</p><div class="data-actions"><button id="profile-export" class="button button-secondary"><i class="fa-solid fa-download" aria-hidden="true"></i> Download backup</button><button class="button button-secondary" data-import-trigger><i class="fa-solid fa-upload" aria-hidden="true"></i> Import backup</button></div><p class="subtle">Importing replaces all data in this browser. You will be asked to confirm first.</p>${undoImportNotice()}</article></section>${creatorProfileSection()}${studentRewards()}`;
+  }
+  function undoImportNotice() {
+    const copy = readSafetyCopy();
+    if (!copy) return "";
+    const when = new Date(copy.savedAt),
+      label = Number.isNaN(when.getTime())
+        ? ""
+        : ` (saved ${new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" }).format(when)})`;
+    return `<div class="notice"><strong>Safety copy available</strong>The data you had before the last import was kept${label}.<button id="undo-import" class="button button-secondary" style="margin-top:0.6rem">Restore previous data</button></div>`;
   }
   function render() {
     if (!isReady()) {
@@ -1198,26 +1231,283 @@
     URL.revokeObjectURL(a.href);
     showToast("Backup downloaded.");
   }
-  function importData(file) {
-    const reader = new FileReader();
-    reader.onload = () => {
-      try {
-        const incoming = JSON.parse(reader.result);
-        if (!incoming || typeof incoming !== "object" || !incoming.profile)
-          throw new Error();
-        data = {
-          ...defaultData(),
-          ...incoming,
-          counts: { ...defaultData().counts, ...incoming.counts },
-        };
-        save();
-        render();
-        showToast("Backup restored successfully.");
-      } catch {
-        showToast("That file is not a valid tracker backup.");
+  // ---- Backup import ----
+  // A backup is the same JSON that "Download backup" writes. Importing is validated first,
+  // confirmed by the user, and only then written. The previous data is copied to BACKUP_KEY
+  // before it is replaced, so a failed or regretted import can be undone.
+  class BackupError extends Error {}
+  const isPlainObject = (v) =>
+    v !== null && typeof v === "object" && !Array.isArray(v);
+  const isDateKey = (v) =>
+    typeof v === "string" &&
+    /^\d{4}-\d{2}-\d{2}$/.test(v) &&
+    dateKey(parseDate(v)) === v;
+  // Turns backup text into clean tracker data, or throws a BackupError with a readable reason.
+  // Damaged individual entries are dropped and counted instead of failing the whole file.
+  function parseBackup(text) {
+    if (!text || !text.trim()) throw new BackupError("The file is empty.");
+    let raw;
+    try {
+      raw = JSON.parse(text);
+    } catch {
+      throw new BackupError(
+        "This file is not valid JSON, so it cannot be a tracker backup. Choose a file created with “Download backup”.",
+      );
+    }
+    if (!isPlainObject(raw) || !isPlainObject(raw.profile))
+      throw new BackupError(
+        "This file is not a Badge Tracker backup. It has no profile information.",
+      );
+    const version = raw.schemaVersion === undefined ? 0 : raw.schemaVersion;
+    if (!Number.isInteger(version) || version < 0)
+      throw new BackupError("The backup has an unreadable format version.");
+    if (version > SCHEMA_VERSION)
+      throw new BackupError(
+        `This backup was made by a newer version of the tracker (format ${version}). Refresh the page to load the latest version, then try again.`,
+      );
+    const { fullName, builderId, startDate } = raw.profile;
+    if (typeof fullName !== "string" || !fullName.trim())
+      throw new BackupError("The backup’s profile has no name.");
+    if (typeof builderId !== "string")
+      throw new BackupError("The backup’s profile has no Builder ID.");
+    if (!isDateKey(startDate))
+      throw new BackupError(
+        "The backup’s starting date is missing or not a valid date.",
+      );
+    for (const key of ["activities", "counts", "badges", "settings"])
+      if (raw[key] !== undefined && !isPlainObject(raw[key]))
+        throw new BackupError(`The “${key}” section of the backup is damaged.`);
+    for (const key of ["articles", "comments", "weeklyArticles"])
+      if (raw[key] !== undefined && !Array.isArray(raw[key]))
+        throw new BackupError(`The “${key}” section of the backup is damaged.`);
+
+    let skipped = 0;
+    const activities = {};
+    for (const [date, entry] of Object.entries(raw.activities || {})) {
+      if (!isDateKey(date) || !isPlainObject(entry)) {
+        skipped++;
+        continue;
       }
+      activities[date] = Object.fromEntries(
+        DAILY_KEYS.map((k) => [k, entry[k] === true]),
+      );
+    }
+    const counts = {};
+    for (const [key, fallback] of Object.entries(defaultData().counts)) {
+      const value = raw.counts?.[key];
+      if (typeof fallback === "boolean") counts[key] = value === true;
+      else if (Number.isFinite(value) && value >= 0) counts[key] = value;
+      else {
+        counts[key] = fallback;
+        if (value !== undefined) skipped++;
+      }
+    }
+    const records = (list) =>
+      (raw[list] || []).flatMap((item) => {
+        if (!isPlainObject(item)) {
+          skipped++;
+          return [];
+        }
+        const likes = Number(item.likes);
+        const record = {
+          ...item,
+          name: typeof item.name === "string" ? item.name : "",
+          likes: Number.isFinite(likes) ? Math.max(0, likes) : 0,
+        };
+        if ("date" in record && !(typeof record.date === "string" && (record.date === "" || isDateKey(record.date))))
+          delete record.date;
+        return [record];
+      });
+    const weeklyArticles = (raw.weeklyArticles || []).flatMap((item) => {
+      if (!isPlainObject(item) || !isDateKey(item.date)) {
+        skipped++;
+        return [];
+      }
+      return [{ ...item, title: typeof item.title === "string" ? item.title : "" }];
+    });
+    const badges = {};
+    for (const badge of BADGES) {
+      const record = raw.badges?.[badge.id];
+      if (record === undefined) continue;
+      if (!isPlainObject(record)) {
+        skipped++;
+        continue;
+      }
+      const clean = { ...record };
+      for (const flag of ["earned", "completed"])
+        if (flag in clean) clean[flag] = clean[flag] === true;
+      if ("date" in clean) clean.date = isDateKey(clean.date) ? clean.date : null;
+      badges[badge.id] = clean;
+    }
+    const settings = { ...defaultData().settings };
+    for (const [key, value] of Object.entries(raw.settings || {}))
+      if (
+        key !== "__proto__" &&
+        ["string", "number", "boolean"].includes(typeof value)
+      )
+        settings[key] = value;
+
+    const parsed = {
+      ...defaultData(),
+      schemaVersion: version,
+      profile: { fullName: fullName.trim(), builderId: builderId.trim(), startDate },
+      activities,
+      counts,
+      articles: records("articles"),
+      comments: records("comments"),
+      weeklyArticles,
+      badges,
+      settings,
     };
-    reader.readAsText(file);
+    migrateData(parsed, version);
+    return { data: parsed, skipped };
+  }
+  function summarizeData(d) {
+    return {
+      name: d.profile?.fullName || "—",
+      builderId: d.profile?.builderId || "—",
+      startDate: d.profile?.startDate ? formatDate(d.profile.startDate) : "—",
+      days: Object.values(d.activities || {}).filter((a) =>
+        Object.values(a).some(Boolean),
+      ).length,
+      badges: Object.values(d.badges || {}).filter((b) => b.earned || b.completed)
+        .length,
+    };
+  }
+  // True when this browser already holds saved tracker data (even data we could not read).
+  function hasSavedData() {
+    try {
+      return Boolean(data.profile) || localStorage.getItem(STORAGE_KEY) !== null;
+    } catch {
+      return Boolean(data.profile);
+    }
+  }
+  function readSafetyCopy() {
+    try {
+      const copy = JSON.parse(localStorage.getItem(BACKUP_KEY));
+      return copy && typeof copy.raw === "string" ? copy : null;
+    } catch {
+      return null;
+    }
+  }
+  let pendingRestore = null;
+  function openImportDialog(html) {
+    $("#import-dialog-content").innerHTML = html;
+    const dialog = $("#import-dialog");
+    if (!dialog.open) dialog.showModal();
+  }
+  function showImportError(message) {
+    pendingRestore = null;
+    openImportDialog(
+      `<div class="modal-heading"><div><p class="eyebrow">Import backup</p><h2>This file can’t be imported</h2></div><button class="icon-button" data-close-import aria-label="Close"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button></div><div class="notice import-error" role="alert"><strong>${escapeHtml(message)}</strong>Nothing was changed. Your current data is untouched.</div><div class="modal-actions"><button class="button button-primary" data-close-import>OK</button></div>`,
+    );
+  }
+  function showImportConfirm() {
+    const { incoming, fileName, skipped, kind } = pendingRestore,
+      replacing = hasSavedData(),
+      backup = summarizeData(incoming),
+      current = summarizeData(data),
+      rows = [
+        ["Name", "name"],
+        ["Builder ID", "builderId"],
+        ["Starting date", "startDate"],
+        ["Days with activity", "days"],
+        ["Badges completed", "badges"],
+      ]
+        .map(
+          ([label, key]) =>
+            `<tr><th scope="row">${label}</th>${replacing ? `<td>${escapeHtml(String(current[key]))}</td>` : ""}<td>${escapeHtml(String(backup[key]))}</td></tr>`,
+        )
+        .join(""),
+      undo = kind === "undo";
+    openImportDialog(
+      `<div class="modal-heading"><div><p class="eyebrow">${undo ? "Restore previous data" : "Import backup"}</p><h2>${replacing ? "Replace your current data?" : "Restore this backup?"}</h2></div><button class="icon-button" data-close-import aria-label="Close"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button></div>${fileName ? `<p class="subtle">File: <strong>${escapeHtml(fileName)}</strong></p>` : ""}<table class="import-compare"><thead><tr><th scope="col"><span class="visually-hidden">Detail</span></th>${replacing ? '<th scope="col">Current data</th>' : ""}<th scope="col">${undo ? "Previous data" : "Backup file"}</th></tr></thead><tbody>${rows}</tbody></table>${replacing ? `<div class="notice"><strong>This overwrites everything saved in this browser.</strong>Your profile, activity history, badges, weekly records, and settings will be replaced by ${undo ? "the previous data" : "the backup"}. A safety copy of your current data is kept so you can undo this from Profile &amp; settings.</div>` : '<p class="subtle">Nothing is saved in this browser yet, so no existing data will be replaced.</p>'}${skipped ? `<p class="subtle">${skipped} damaged ${skipped === 1 ? "entry" : "entries"} in the file will be skipped.</p>` : ""}<div class="modal-actions"><button class="button button-secondary" data-close-import>Cancel</button><button id="confirm-import" class="button ${replacing ? "button-danger" : "button-primary"}">${replacing ? (undo ? "Restore previous data" : "Replace my data") : "Restore backup"}</button></div>`,
+    );
+  }
+  async function handleImportFile(file) {
+    try {
+      if (file.size > MAX_BACKUP_BYTES)
+        throw new BackupError("This file is too large to be a tracker backup.");
+      const text = await file.text().catch(() => {
+        throw new BackupError("The file could not be read. Please try again.");
+      });
+      const { data: incoming, skipped } = parseBackup(text);
+      pendingRestore = { kind: "import", incoming, skipped, fileName: file.name };
+      showImportConfirm();
+    } catch (err) {
+      showImportError(
+        err instanceof BackupError
+          ? err.message
+          : "Something went wrong while reading the file.",
+      );
+    }
+  }
+  function offerUndoImport() {
+    const copy = readSafetyCopy();
+    if (!copy) return;
+    try {
+      const { data: previous, skipped } = parseBackup(copy.raw);
+      pendingRestore = { kind: "undo", incoming: previous, skipped, raw: copy.raw };
+      showImportConfirm();
+    } catch {
+      showImportError(
+        "The safety copy could not be read, so it was left as it is.",
+      );
+    }
+  }
+  // Writes new data with a safety copy of the old data first. Returns true on success.
+  // On any failure the previous data is put back exactly as it was.
+  function replaceStoredData(nextJson) {
+    let previousRaw;
+    try {
+      previousRaw = localStorage.getItem(STORAGE_KEY);
+      if (previousRaw !== null)
+        localStorage.setItem(
+          BACKUP_KEY,
+          JSON.stringify({ savedAt: new Date().toISOString(), raw: previousRaw }),
+        );
+    } catch {
+      return "Your browser has no room to keep a safety copy of your current data, so nothing was changed.";
+    }
+    try {
+      localStorage.setItem(STORAGE_KEY, nextJson);
+      if (localStorage.getItem(STORAGE_KEY) !== nextJson)
+        throw new Error("verify");
+      return null;
+    } catch {
+      try {
+        if (previousRaw === null) localStorage.removeItem(STORAGE_KEY);
+        else localStorage.setItem(STORAGE_KEY, previousRaw);
+      } catch {
+        /* the original value was never overwritten if setItem threw */
+      }
+      return "The data could not be saved, so nothing was changed. Your current data is untouched.";
+    }
+  }
+  function confirmImport() {
+    const job = pendingRestore;
+    if (!job) return;
+    const nextJson =
+      job.kind === "undo" ? job.raw : JSON.stringify(job.incoming);
+    const failure = replaceStoredData(nextJson);
+    if (failure) {
+      showImportError(failure);
+      return;
+    }
+    pendingRestore = null;
+    data = load();
+    view = "dashboard";
+    calendarCursor = new Date();
+    selectedDate = todayKey();
+    $("#import-dialog").close();
+    $("#settings-dialog").close();
+    render();
+    scrollTo(0, 0);
+    showToast(
+      job.kind === "undo"
+        ? "Previous data restored."
+        : "Backup restored. Your progress is ready.",
+    );
   }
   function openSettings() {
     const f = $("#settings-form");
@@ -1252,7 +1542,7 @@
   // Event delegation keeps cards, dynamic pages, dialogs, and forms lightweight.
   document.addEventListener("click", (e) => {
     const target = e.target.closest(
-      "[data-view],[data-go],[data-badge],[data-calendar-date],[data-cal-shift],#routine-complete,#mobile-menu,#header-settings,#profile-settings,#profile-export,#export-data,#reset-data,#confirm-reset,[data-close-badge],[data-toggle-badge],[data-add-record],[data-delete-record],#add-article-weekly,[data-weekly-action],[data-chart-tab],[data-chart-slice]",
+      "[data-view],[data-go],[data-badge],[data-calendar-date],[data-cal-shift],#routine-complete,#mobile-menu,#header-settings,#profile-settings,#profile-export,#export-data,[data-import-trigger],[data-close-import],#confirm-import,#undo-import,#reset-data,#confirm-reset,[data-close-badge],[data-toggle-badge],[data-add-record],[data-delete-record],#add-article-weekly,[data-weekly-action],[data-chart-tab],[data-chart-slice]",
     );
     if (!target) return;
     if (target.dataset.chartTab !== undefined) {
@@ -1302,12 +1592,30 @@
       exportData();
       return;
     }
+    if (target.hasAttribute("data-import-trigger")) {
+      $("#import-file").click();
+      return;
+    }
+    if (target.hasAttribute("data-close-import")) {
+      $("#import-dialog").close();
+      return;
+    }
+    if (target.id === "confirm-import") {
+      confirmImport();
+      return;
+    }
+    if (target.id === "undo-import") {
+      offerUndoImport();
+      return;
+    }
     if (target.id === "reset-data") {
       $("#reset-dialog").showModal();
       return;
     }
     if (target.id === "confirm-reset") {
       localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(BACKUP_KEY);
+      localStorage.removeItem(UNREADABLE_KEY);
       data = defaultData();
       $("#settings-dialog").close();
       render();
@@ -1461,10 +1769,38 @@
       render();
       return;
     }
-    if (t.id === "import-data" && t.files[0]) {
-      importData(t.files[0]);
+    if (t.id === "import-file") {
+      const file = t.files[0];
+      t.value = ""; // lets the same file be chosen again later
+      if (file) handleImportFile(file);
       return;
     }
+  });
+  $("#import-dialog").addEventListener("close", () => {
+    pendingRestore = null;
+  });
+  // First-time visitors can drop a backup file anywhere on the welcome page. A file dropped
+  // elsewhere is ignored instead of making the browser navigate away from the tracker.
+  const welcome = $("#onboarding"),
+    dropzone = $("#import-dropzone"),
+    hasFiles = (e) => [...(e.dataTransfer?.types || [])].includes("Files");
+  window.addEventListener("dragover", (e) => {
+    if (hasFiles(e)) e.preventDefault();
+  });
+  window.addEventListener("drop", (e) => {
+    if (hasFiles(e)) e.preventDefault();
+  });
+  welcome.addEventListener("dragover", (e) => {
+    if (hasFiles(e)) dropzone.classList.add("is-dragover");
+  });
+  welcome.addEventListener("dragleave", (e) => {
+    if (!welcome.contains(e.relatedTarget))
+      dropzone.classList.remove("is-dragover");
+  });
+  welcome.addEventListener("drop", (e) => {
+    dropzone.classList.remove("is-dragover");
+    const file = e.dataTransfer?.files[0];
+    if (file) handleImportFile(file);
   });
   document.addEventListener("keydown", (e) => {
     const slice = e.target.closest?.("circle[data-chart-slice]");
