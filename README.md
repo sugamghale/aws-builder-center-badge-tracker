@@ -18,6 +18,7 @@ Use it to record daily activities, follow streaks, see your next badge goal, and
 * Mark badges you already earned before using the tracker
 * Add article and comment likes for creator/contributor badges
 * Save a backup and restore it later
+* Switch between a light and a dark theme (it follows your system setting until you choose)
 
 ## Getting started
 
@@ -85,6 +86,9 @@ https://builder.aws.com/content/3JlS45QfgOxZrGCHFRyoKN2KXZB/how-i-built-a-privat
 * `app.js` — tracker behavior and saved progress
 * `guide/`, `badges/`, `faq/` — static content pages
 * `pages.css` — styles for the static content pages
+* `theme.js` — light/dark theme (saved separately from your tracker data)
+* `pages.js` — menu and sidebar helpers for the static pages
+* `fonts/` — self-hosted Inter and JetBrains Mono (SIL Open Font License 1.1)
 * `robots.txt`, `sitemap.xml`, `og-image.png`, favicons — search and sharing assets
 
 ---

@@ -946,17 +946,18 @@
     activity: { tab: 30, pinned: null },
   };
   const chartModels = {};
+  // Chart colours are CSS variables so they follow the light/dark theme.
   const STATUS_COLORS = {
-    complete: "#16794c",
-    progress: "#ff9900",
-    start: "#c5cfd8",
+    complete: "var(--c-complete)",
+    progress: "var(--c-progress)",
+    start: "var(--c-start)",
   };
   const ACTIVITY_COLORS = {
-    visit: "#2469a0",
-    read: "#0f8b8d",
-    comment: "#16794c",
-    like: "#d9480f",
-    wishVote: "#7b4bb7",
+    visit: "var(--c-visit)",
+    read: "var(--c-read)",
+    comment: "var(--c-comment)",
+    like: "var(--c-like)",
+    wishVote: "var(--c-wish)",
   };
   function badgeChartModel() {
     const tab = chartState.badge.tab,
@@ -1120,7 +1121,7 @@
       .filter((s) => s.value > 0)
       .map((s) => {
         const len = (s.value / total) * C,
-          ring = `<circle class="donut-slice" data-chart-slice="${s.key}" data-chart="${m.id}" cx="60" cy="60" r="${R}" fill="none" stroke="${s.color}" stroke-dasharray="${len} ${C - len}" stroke-dashoffset="${-offset}" tabindex="0" role="button" aria-label="${s.label}: ${s.value} of ${total} (${Math.round((s.value / total) * 100)}%)"></circle>`;
+          ring = `<circle class="donut-slice" data-chart-slice="${s.key}" data-chart="${m.id}" cx="60" cy="60" r="${R}" fill="none" style="stroke:${s.color}" stroke-dasharray="${len} ${C - len}" stroke-dashoffset="${-offset}" tabindex="0" role="button" aria-label="${s.label}: ${s.value} of ${total} (${Math.round((s.value / total) * 100)}%)"></circle>`;
         offset += len;
         return ring;
       })
@@ -1137,7 +1138,7 @@
           `<button type="button" class="chart-tab" data-chart-tab="${value}" data-chart="${m.id}" aria-pressed="${String(value) === String(m.tab)}">${label}</button>`,
       )
       .join("");
-    return `<article class="card chart-card" id="chart-${m.id}"><p class="eyebrow">${m.eyebrow}</p><h2>${m.title}</h2><div class="chart-tabs" role="group" aria-label="${m.title} range">${tabs}</div><div class="chart-body"><div class="donut-wrap"><svg class="donut" viewBox="0 0 120 120" role="group" aria-label="${m.title}"><circle cx="60" cy="60" r="${R}" fill="none" stroke="#eef1f4" stroke-width="16"></circle>${rings}</svg><div class="donut-center" aria-hidden="true"><strong class="donut-center-value">${m.centerValue}</strong><small class="donut-center-label">${m.centerLabel}</small></div></div><div class="chart-legend">${legend}</div></div><p class="subtle chart-summary">${m.summary}</p><div class="chart-detail" aria-live="polite"></div></article>`;
+    return `<article class="card chart-card" id="chart-${m.id}"><p class="eyebrow">${m.eyebrow}</p><h2>${m.title}</h2><div class="chart-tabs" role="group" aria-label="${m.title} range">${tabs}</div><div class="chart-body"><div class="donut-wrap"><svg class="donut" viewBox="0 0 120 120" role="group" aria-label="${m.title}"><circle class="donut-track" cx="60" cy="60" r="${R}"></circle>${rings}</svg><div class="donut-center" aria-hidden="true"><strong class="donut-center-value">${m.centerValue}</strong><small class="donut-center-label">${m.centerLabel}</small></div></div><div class="chart-legend">${legend}</div></div><p class="subtle chart-summary">${m.summary}</p><div class="chart-detail" aria-live="polite"></div></article>`;
   }
   function renderCharts() {
     const host = $("#dashboard-charts");
@@ -1165,7 +1166,7 @@
       : '<p class="subtle">Hover, tap, or focus a slice for details.</p>';
   }
   function creatorProfileSection() {
-    return `<section class="creator-section card" aria-labelledby="creator-title"><div class="creator-profile-layout"><img class="creator-profile-photo" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjETkyahNf4nfo5HgkZ-Nb4FAyla5TAIE6kxHYRoOWIS_-qF7zJdVItQCYtIkHuxtufjyIMqYWImLfNgKmlIsYDe0Zskn6YrkMq4r3655z5XQtZW9iAefN77LyiKXQgdIb_KfR4Jt9fVbCI5eP4QDWtnfTxYIbT7BkKyHTbC6mriAaM3UbcROMxNFSdXvtz/s875/photo.png" alt="Sugam Ghale" draggable="false" referrerpolicy="no-referrer"><div><p class="eyebrow">Created by</p><h2 id="creator-title">Sugam Ghale</h2><p class="creator-role">Student Builder Group Leader</p><p class="subtle">Building, learning, and sharing with the AWS community.</p><div class="creator-social-links"><a class="creator-social-link" href="https://builder.aws.com/community/@sugamghale" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-aws" aria-hidden="true"></i> AWS Builder Center <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a><a class="creator-social-link" href="https://www.linkedin.com/in/sugamghale/" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-linkedin" aria-hidden="true"></i> LinkedIn <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a><a class="creator-social-link" href="https://github.com/sugamghale" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-github" aria-hidden="true"></i> GitHub <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a></div></div></div></section>`;
+    return `<section class="creator-section card" aria-labelledby="creator-title"><div class="creator-profile-layout"><img class="creator-profile-photo" src="/favicon-192.png" alt="Sugam Ghale" draggable="false"><div><p class="eyebrow">Created by</p><h2 id="creator-title">Sugam Ghale</h2><p class="creator-role">Student Builder Group Leader</p><p class="subtle">Building, learning, and sharing with the AWS community.</p><div class="creator-social-links"><a class="creator-social-link" href="https://builder.aws.com/community/@sugamghale" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-aws" aria-hidden="true"></i> AWS Builder Center <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a><a class="creator-social-link" href="https://www.linkedin.com/in/sugamghale/" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-linkedin" aria-hidden="true"></i> LinkedIn <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a><a class="creator-social-link" href="https://github.com/sugamghale" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-github" aria-hidden="true"></i> GitHub <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a></div></div></div></section>`;
   }
   function renderProfile() {
     const p = data.profile;
@@ -1213,6 +1214,38 @@
       weekly: "Weekly goals",
       profile: "Profile & settings",
     }[view];
+    $("#app").dataset.currentView = view;
+    $$(".nav-group").forEach((group) => {
+      if ($(".nav-link.active", group)) setNavGroup(group, true);
+    });
+    renderChrome();
+  }
+  function setNavGroup(group, open) {
+    group.classList.toggle("is-collapsed", !open);
+    $("[data-nav-toggle]", group)?.setAttribute("aria-expanded", String(open));
+  }
+  // Top bar user chip and the right-hand panels (today's routine, streaks).
+  function renderChrome() {
+    const name = (data.profile.fullName || "").trim(),
+      words = name.split(/\s+/).filter(Boolean),
+      today = getActivity(todayKey()),
+      done = DAILY_KEYS.filter((k) => today[k]).length;
+    $("#topbar-user-name").textContent = words[0] || "You";
+    $("#topbar-avatar").textContent =
+      words
+        .slice(0, 2)
+        .map((w) => w[0])
+        .join("")
+        .toUpperCase() || "?";
+    $("#rail-today").innerHTML =
+      `<h2 class="rail-title">Today <span class="pill ${done === 5 ? "complete" : "progressing"}">${done}/5</span></h2>${activityChecklist(todayKey(), true)}<div class="progress green" style="margin-top:12px"><span style="width:${(done / 5) * 100}%"></span></div>`;
+    $("#rail-streaks").innerHTML =
+      `<h2 class="rail-title">Streaks</h2>${["visit", "comment", "like"]
+        .map((k) => {
+          const s = streakInfo(k);
+          return `<div class="rail-stat"><span>${k[0].toUpperCase() + k.slice(1)}</span><strong>${s.current} <small>best ${s.longest}</small></strong></div>`;
+        })
+        .join("")}`;
   }
   function escapeHtml(v) {
     const e = document.createElement("div");
@@ -1603,7 +1636,7 @@
   // Event delegation keeps cards, dynamic pages, dialogs, and forms lightweight.
   document.addEventListener("click", (e) => {
     const target = e.target.closest(
-      "[data-view],[data-go],[data-badge],[data-calendar-date],[data-cal-shift],#routine-complete,#mobile-menu,#header-settings,#profile-settings,#profile-export,#export-data,[data-import-trigger],[data-close-import],#confirm-import,#undo-import,#reset-data,#confirm-reset,[data-close-badge],[data-toggle-badge],[data-add-record],[data-delete-record],#add-article-weekly,[data-weekly-action],[data-chart-tab],[data-chart-slice]",
+      "[data-view],[data-go],[data-badge],[data-calendar-date],[data-cal-shift],#routine-complete,#mobile-menu,#header-settings,#profile-settings,#profile-export,#export-data,[data-export],[data-nav-toggle],[data-import-trigger],[data-close-import],#confirm-import,#undo-import,#reset-data,#confirm-reset,[data-close-badge],[data-toggle-badge],[data-add-record],[data-delete-record],#add-article-weekly,[data-weekly-action],[data-chart-tab],[data-chart-slice]",
     );
     if (!target) return;
     if (target.dataset.chartTab !== undefined) {
@@ -1650,8 +1683,17 @@
       openSettings();
       return;
     }
-    if (target.id === "profile-export" || target.id === "export-data") {
+    if (
+      target.id === "profile-export" ||
+      target.id === "export-data" ||
+      target.hasAttribute("data-export")
+    ) {
       exportData();
+      return;
+    }
+    if (target.hasAttribute("data-nav-toggle")) {
+      const group = target.closest(".nav-group");
+      setNavGroup(group, group.classList.contains("is-collapsed"));
       return;
     }
     if (target.hasAttribute("data-import-trigger")) {
@@ -1980,7 +2022,31 @@
     render();
     showToast("Profile and completed badges saved.");
   });
+  // Top bar search: opens the Badges page with the text already filtered.
+  function searchBadges(query) {
+    view = "badges";
+    render();
+    const box = $("#badge-search");
+    if (box) {
+      box.value = query;
+      filterBadges();
+    }
+    scrollTo(0, 0);
+  }
+  $("#topbar-search").addEventListener("submit", (e) => {
+    e.preventDefault();
+    searchBadges($("#topbar-search-input").value.trim());
+  });
+  // Tapping the dimmed area behind the mobile menu closes it.
+  $("#app").addEventListener("click", (e) => {
+    if (e.target.id !== "app") return;
+    $(".sidebar").classList.remove("mobile-open");
+    $("#mobile-menu").setAttribute("aria-expanded", "false");
+  });
   renderBadgePicker($("#setup-badge-picker"), "setup-earned-badge");
   $("#setup-date").value = todayKey();
   render();
+  // Arriving from the guide pages' search box: /?q=text#badges
+  const initialSearch = new URLSearchParams(location.search).get("q");
+  if (initialSearch && isReady()) searchBadges(initialSearch.slice(0, 80));
 })();
