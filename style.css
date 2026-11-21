@@ -430,10 +430,17 @@ label:has(> input:not([type="checkbox"])) {
   view-transition-name: sidebar;
 }
 .sidebar-title {
+  display: block;
   margin: 0 8px 20px;
   font-size: 22px;
   font-weight: 500;
   letter-spacing: -0.01em;
+  color: var(--text);
+  text-decoration: none;
+}
+.sidebar-title:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
 }
 .nav-list {
   display: grid;
@@ -1240,6 +1247,15 @@ label:has(> input:not([type="checkbox"])) {
 .calendar-card {
   min-width: 0;
 }
+/* Give the month grid more room than the selected-day panel so two-digit dates stay readable. */
+#view-calendar > .grid-2 {
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+}
+@media (max-width: 640px) {
+  #view-calendar > .grid-2 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
 .calendar-controls {
   display: flex;
   align-items: center;
@@ -1329,26 +1345,22 @@ label:has(> input:not([type="checkbox"])) {
   background: var(--accent);
 }
 .calendar-day .dots {
-  position: absolute;
-  right: 5px;
-  top: 5px;
-  z-index: 1;
-  font-size: 9px;
-  color: var(--accent-ink);
-  letter-spacing: -1px;
+  /* The purple bar already shows partial activity; the count is in the day's accessible label.
+     Showing it as well collided with two-digit dates in the narrow calendar cells. */
+  display: none;
 }
 .day-complete-icon {
   position: absolute;
-  top: 4px;
-  right: 4px;
+  right: 3px;
+  bottom: 3px;
   z-index: 2;
   display: grid;
   place-items: center;
-  width: 16px;
-  height: 16px;
+  width: 13px;
+  height: 13px;
   background: var(--green-strong);
   color: #000;
-  font-size: 9px;
+  font-size: 8px;
   line-height: 1;
 }
 .calendar-footer {
@@ -2181,11 +2193,13 @@ label:has(> input:not([type="checkbox"])) {
   .sidebar {
     position: fixed;
     top: var(--topbar-h);
-    bottom: 0;
     left: 0;
     z-index: 35;
     width: min(300px, 86vw);
-    height: auto;
+    /* Fill the screen below the top bar. An explicit height is needed because the sidebar's
+       align-self (set for the desktop layout) would otherwise shrink it to its content. */
+    height: calc(100vh - var(--topbar-h));
+    height: calc(100dvh - var(--topbar-h));
     border-right: 1px solid var(--line-strong);
     transform: translateX(-100%);
     visibility: hidden;

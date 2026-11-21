@@ -1665,7 +1665,12 @@
       return;
     }
     if (target.dataset.go) {
+      // Links such as the "Badge Tracker" title open the page inside the app instead of reloading.
+      if (target.tagName === "A") e.preventDefault();
       if ($("#badge-dialog").open) $("#badge-dialog").close();
+      $(".sidebar").classList.remove("mobile-open");
+      $("#mobile-menu").setAttribute("aria-expanded", "false");
+      if (target.tagName === "A") scrollTo(0, 0);
       view = target.dataset.go;
       render();
       return;
